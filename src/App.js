@@ -15,6 +15,7 @@ function App() {
     <Router>
       <GlobalStyle />
       <Routes>
+        {/* 그룹 만들기 페이지가 아닐 때만 헤더를 표시 */}
         <Route
           path="/"
           element={
@@ -40,12 +41,7 @@ function App() {
         />
         <Route
           path="/create-group"
-          element={
-            <>
-              <Header isPublic={true} setIsPublic={setIsPublic} />
-              <CreateGroup />
-            </>
-          }
+          element={<CreateGroup />} // 그룹 만들기 페이지에 헤더 제거
         />
       </Routes>
     </Router>
