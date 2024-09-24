@@ -5,7 +5,7 @@ import Header from "./components/Header";
 import GroupPage from "./pages/GroupPage"; // 공개 그룹 페이지
 import PrivateGroupAccess from "./pages/PrivateGroupAccess"; // 비공개 그룹 접근 페이지 (비밀번호 입력)
 import PrivateGroupPage from "./pages/PrivateGroupPage"; // 비공개 그룹 페이지
-import CreateGroup from "./pages/CreateGroup";
+import CreateGroup from "./pages/CreateGroup"; // 그룹 만들기 페이지
 import GlobalStyle from "./styles/GlobalStyle";
 
 function App() {
