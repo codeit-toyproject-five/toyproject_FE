@@ -6,7 +6,8 @@ import PrivateGroupAccess from "./pages/PrivateGroupAccess";
 import PrivateGroupPage from "./pages/PrivateGroupPage";
 import CreateGroup from "./pages/CreateGroup";
 import GroupDetail from "./pages/GroupDetail";
-import MemoryUploadPage from "./pages/MemoryUploadPage.js"; // 추억 올리기 페이지 추가
+import MemoryUploadPage from "./pages/MemoryUploadPage";
+import PrivateMemoryAccessPage from "./pages/PrivateMemoryAccessPage";
 import GlobalStyle from "./styles/GlobalStyle";
 
 const mockGroupData = {
@@ -49,9 +50,10 @@ function App() {
           path="/group/:id"
           element={<GroupDetail group={mockGroupData} />}
         />
+        <Route path="/memory-upload" element={<MemoryUploadPage />} />
         <Route
-          path="/memory-upload"
-          element={<MemoryUploadPage />} // 추억 올리기 페이지 경로
+          path="/group/:groupId/private-memory-access"
+          element={<PrivateMemoryAccessPage />}
         />
       </Routes>
     </Router>
