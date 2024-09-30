@@ -13,8 +13,9 @@ const PrivateMemoryAccessPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (password === "group_password") {
-      navigate(`/group/${groupId}/private-memories`);
+    if (password === "1234") {
+      // 비밀번호가 일치하는 경우
+      navigate(`/group/${groupId}`, { state: { isPrivateMemory: true } }); // 비공개 추억 페이지로 이동
     } else {
       alert("비밀번호가 틀렸습니다.");
     }

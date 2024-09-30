@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import GroupDetailHeader from "../components/GroupDetailHeader";
 import GroupEditModal from "../components/GroupEditModal";
 import PublicMemories from "./PublicMemories";
 import PrivateMemories from "./PrivateMemories";
-import { useNavigate } from "react-router-dom";
 import {
   GroupDetailContainer,
   FilterContainer,
@@ -15,6 +15,14 @@ const GroupDetail = ({ group }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isPublicMemory, setIsPublicMemory] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation(); // navigate로부터 전달된 state를 가져옵니다.
+
+  useEffect(() => {
+    // location.state를 통해 비공개 추억인지 확인
+    if (location.state?.isPrivateMemory) {
+      setIsPublicMemory(false);
+    }
+  }, [location.state]);
 
   const handleOpenEditModal = () => {
     setIsEditModalOpen(true);
