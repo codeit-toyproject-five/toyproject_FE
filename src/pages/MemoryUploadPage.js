@@ -4,16 +4,16 @@ import {
   UploadContainer,
   UploadForm,
   FormGroup,
+  Label,
   Input,
   TextArea,
-  Label,
-  Button,
   ToggleContainer,
-  ToggleSwitchLabel,
-  CloseButtonContainer,
+  SubmitButton,
   CloseButton,
+  ToggleSwitchStyled,
+  PasswordInput,
 } from "../styles/MemoryUploadStyle";
-import PasswordModal from "../components/PasswordModal"; // 모달 컴포넌트 추가
+import PasswordModal from "../components/PasswordModal";
 
 const MemoryUploadPage = () => {
   const [memoryData, setMemoryData] = useState({
@@ -28,7 +28,8 @@ const MemoryUploadPage = () => {
     password: "",
   });
 
-  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 관리
+  const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
+  const [confirmedPassword, setConfirmedPassword] = useState(""); // 모달에서 받은 비밀번호 저장
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -40,41 +41,41 @@ const MemoryUploadPage = () => {
     setMemoryData({ ...memoryData, image: e.target.files[0] });
   };
 
-  const handleToggleChange = () => {
-    setMemoryData((prevData) => ({
-      ...prevData,
-      isPublic: !prevData.isPublic,
-    }));
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!memoryData.isPublic) {
-      // 비공개로 설정된 경우 모달 열기
-      setIsModalOpen(true);
+
+    if (!memoryData.isPublic && memoryData.password !== confirmedPassword) {
+      setPasswordModalOpen(true); // 모달 열기 (비밀번호 확인)
     } else {
-      // 공개인 경우 바로 업로드 처리
-      console.log(memoryData);
-      // 업로드 처리 로직
+      // 추억 업로드 로직 추가
+      console.log("추억 업로드:", memoryData);
     }
   };
 
   const handleModalSubmit = (password) => {
-    setIsModalOpen(false);
-    console.log("추억 올리기 데이터:", memoryData, "비밀번호:", password);
-    // 비밀번호 인증 후 업로드 처리 로직 추가
+    if (password === memoryData.password) {
+      setConfirmedPassword(password);
+      setPasswordModalOpen(false); // 모달 닫기
+      console.log("추억 업로드:", memoryData); // 비밀번호 확인 후 업로드 로직
+    } else {
+      alert("비밀번호가 일치하지 않습니다.");
+    }
   };
 
-  // 닫기 버튼 클릭 시 페이지 뒤로 이동
-  const handleClose = () => {
+  const handleModalClose = () => {
+    setPasswordModalOpen(false); // 모달 닫기
+  };
+
+  const handleCloseModal = () => {
     navigate(-1); // 이전 페이지로 이동
+  };
+
+  const togglePublicOption = () => {
+    setMemoryData({ ...memoryData, isPublic: !memoryData.isPublic });
   };
 
   return (
     <UploadContainer>
-      <CloseButtonContainer>
-        <CloseButton onClick={handleClose}>&times;</CloseButton>
-      </CloseButtonContainer>
       <h2>추억 올리기</h2>
       <UploadForm onSubmit={handleSubmit}>
         <FormGroup>
@@ -142,35 +143,34 @@ const MemoryUploadPage = () => {
         <FormGroup>
           <Label>추억 공개 선택</Label>
           <ToggleContainer>
-            <ToggleSwitchLabel>
+            <ToggleSwitchStyled>
               <input
                 type="checkbox"
-                checked={!memoryData.isPublic}
-                onChange={handleToggleChange}
+                checked={memoryData.isPublic}
+                onChange={togglePublicOption}
               />
-              비공개
-            </ToggleSwitchLabel>
+              <span></span>
+            </ToggleSwitchStyled>
+            <span>{memoryData.isPublic ? "공개" : "비공개"}</span>
           </ToggleContainer>
-        </FormGroup>
-        {!memoryData.isPublic && (
-          <FormGroup>
-            <Label>비밀번호 생성</Label>
-            <Input
+          {!memoryData.isPublic && (
+            <PasswordInput
               type="password"
               name="password"
-              placeholder="추억 비밀번호를 생성해 주세요"
+              placeholder="비밀번호를 입력해 주세요"
               value={memoryData.password}
               onChange={handleInputChange}
             />
-          </FormGroup>
-        )}
-        <Button type="submit">올리기</Button>
+          )}
+        </FormGroup>
+        <SubmitButton type="submit">올리기</SubmitButton>
       </UploadForm>
+      <CloseButton onClick={handleCloseModal}>×</CloseButton>
 
-      {isModalOpen && (
+      {isPasswordModalOpen && (
         <PasswordModal
           onSubmit={handleModalSubmit}
-          onClose={() => setIsModalOpen(false)}
+          onClose={handleModalClose}
         />
       )}
     </UploadContainer>

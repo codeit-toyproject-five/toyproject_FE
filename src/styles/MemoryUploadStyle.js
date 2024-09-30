@@ -2,17 +2,23 @@ import styled from "styled-components";
 
 export const UploadContainer = styled.div`
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  padding: 2rem;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f9f9f9;
   position: relative;
 `;
 
 export const UploadForm = styled.form`
-  display: flex;
-  flex-direction: column;
-  width: 50%;
-  gap: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  width: 70%;
+  background: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
 
 export const FormGroup = styled.div`
@@ -21,66 +27,116 @@ export const FormGroup = styled.div`
 `;
 
 export const Label = styled.label`
-  margin-bottom: 0.5rem;
+  font-size: 14px;
   font-weight: bold;
+  margin-bottom: 10px;
 `;
 
 export const Input = styled.input`
-  padding: 0.75rem;
-  border: 1px solid #ccc;
+  padding: 10px;
+  border: 1px solid #ddd;
   border-radius: 5px;
+  font-size: 14px;
+  outline: none;
+  &:focus {
+    border-color: #888;
+  }
 `;
 
 export const TextArea = styled.textarea`
-  padding: 0.75rem;
-  border: 1px solid #ccc;
+  padding: 10px;
+  border: 1px solid #ddd;
   border-radius: 5px;
-  height: 150px;
+  font-size: 14px;
+  resize: none;
+  outline: none;
+  &:focus {
+    border-color: #888;
+  }
 `;
 
-export const Button = styled.button`
-  padding: 1rem;
+export const ToggleContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 10px;
+`;
+
+export const ToggleSwitchStyled = styled.label`
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+  margin-right: 10px;
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  span {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 24px;
+  }
+
+  span:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+  }
+
+  input:checked + span {
+    background-color: #4caf50;
+  }
+
+  input:checked + span:before {
+    transform: translateX(26px);
+  }
+`;
+
+export const SubmitButton = styled.button`
+  grid-column: span 2;
+  padding: 15px 20px;
   background-color: #333;
   color: white;
+  font-size: 16px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  margin-top: 20px;
 
   &:hover {
     background-color: #555;
   }
 `;
 
-export const ToggleContainer = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-export const ToggleSwitchLabel = styled.label`
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-
-  input {
-    margin-right: 0.5rem;
-    transform: scale(1.5);
-  }
-`;
-
-export const CloseButtonContainer = styled.div`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-`;
-
 export const CloseButton = styled.button`
   background: none;
   border: none;
-  font-size: 2rem;
+  font-size: 24px;
   cursor: pointer;
-  color: #333;
-
+  position: absolute;
+  top: 20px;
+  right: 20px;
   &:hover {
-    color: #555;
+    color: #999;
   }
+`;
+
+export const PasswordInput = styled(Input)`
+  margin-top: 10px;
 `;
