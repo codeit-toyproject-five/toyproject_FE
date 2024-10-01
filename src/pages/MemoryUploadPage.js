@@ -47,8 +47,14 @@ const MemoryUploadPage = () => {
     if (!memoryData.isPublic && memoryData.password !== confirmedPassword) {
       setPasswordModalOpen(true); // 모달 열기 (비밀번호 확인)
     } else {
-      // 추억 업로드 로직 추가
-      console.log("추억 업로드:", memoryData);
+      const newMemory = {
+        ...memoryData,
+        id: Date.now(), // 고유한 ID
+        imageUrl: URL.createObjectURL(memoryData.image), // 이미지 URL 생성
+      };
+
+      // 추억 업로드 후 상세 페이지로 이동
+      navigate("/memory-detail", { state: { memory: newMemory } });
     }
   };
 
@@ -56,7 +62,15 @@ const MemoryUploadPage = () => {
     if (password === memoryData.password) {
       setConfirmedPassword(password);
       setPasswordModalOpen(false); // 모달 닫기
-      console.log("추억 업로드:", memoryData); // 비밀번호 확인 후 업로드 로직
+
+      const newMemory = {
+        ...memoryData,
+        id: Date.now(), // 고유한 ID
+        imageUrl: URL.createObjectURL(memoryData.image), // 이미지 URL 생성
+      };
+
+      // 비밀번호 확인 후 추억 상세 페이지로 이동
+      navigate("/memory-detail", { state: { memory: newMemory } });
     } else {
       alert("비밀번호가 일치하지 않습니다.");
     }

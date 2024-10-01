@@ -8,6 +8,7 @@ import CreateGroup from "./pages/CreateGroup";
 import GroupDetail from "./pages/GroupDetail";
 import MemoryUploadPage from "./pages/MemoryUploadPage";
 import PrivateMemoryAccessPage from "./pages/PrivateMemoryAccessPage";
+import MemoryDetailPage from "./pages/MemoryDetailPage";
 import GlobalStyle from "./styles/GlobalStyle";
 
 const mockGroupData = {
@@ -55,6 +56,8 @@ function App() {
           path="/group/:groupId/private-memory-access"
           element={<PrivateMemoryAccessPage />}
         />
+        {/* 추가된 경로 - MemoryDetailPage로 연결 */}
+        <Route path="/memory-detail" element={<MemoryDetailPage />} />
       </Routes>
     </Router>
   );
