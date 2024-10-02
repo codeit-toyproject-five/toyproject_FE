@@ -1,6 +1,6 @@
 import styled from "styled-components";
+import { FaEdit, FaTrashAlt } from "react-icons/fa";
 
-// 전체 페이지 컨테이너 스타일
 export const MemoryDetailContainer = styled.div`
   max-width: 800px;
   margin: 0 auto;
@@ -10,7 +10,6 @@ export const MemoryDetailContainer = styled.div`
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 `;
 
-// 헤더 스타일
 export const Header = styled.div`
   display: flex;
   justify-content: space-between;
@@ -32,41 +31,24 @@ export const Header = styled.div`
   }
 `;
 
-// 프로젝트 타이틀 스타일
 export const ProjectTitle = styled.h1`
   font-size: 24px;
   font-weight: bold;
   margin: 0;
 `;
 
-// 작성자 및 공개/비공개 상태 텍스트 스타일
-export const AuthorInfoContainer = styled.div`
-  display: flex;
-  align-items: center;
-  font-size: 16px;
-  color: #333;
-  margin-bottom: 10px;
-
-  span {
-    margin-right: 10px;
-  }
-`;
-
-// 공개 상태 텍스트 스타일
 export const PublicStatus = styled.span`
   font-size: 14px;
   color: ${({ isPublic }) => (isPublic ? "green" : "red")};
   margin-left: 10px;
 `;
 
-// 제목 스타일
 export const Title = styled.h2`
   font-size: 28px;
   font-weight: bold;
   margin: 20px 0;
 `;
 
-// 정보(장소 및 상호작용 정보) 스타일
 export const Info = styled.div`
   display: flex;
   justify-content: space-between;
@@ -89,7 +71,6 @@ export const Info = styled.div`
   }
 `;
 
-// 조회수 및 공감 수 스타일
 export const InteractionInfo = styled.div`
   display: flex;
   gap: 20px;
@@ -97,7 +78,6 @@ export const InteractionInfo = styled.div`
   color: #777;
 `;
 
-// 이미지 스타일
 export const Image = styled.img`
   width: 100%;
   height: auto;
@@ -105,7 +85,6 @@ export const Image = styled.img`
   margin-bottom: 20px;
 `;
 
-// 본문 내용 스타일
 export const Content = styled.p`
   font-size: 16px;
   line-height: 1.6;
@@ -113,7 +92,6 @@ export const Content = styled.p`
   color: #333;
 `;
 
-// 액션 버튼 컨테이너 스타일
 export const ActionButtonContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -133,7 +111,88 @@ export const ActionButtonContainer = styled.div`
   }
 `;
 
-// 태그 스타일
+export const CommentsContainer = styled.div`
+  margin-top: 20px;
+`;
+
+export const Comment = styled.div`
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 10px;
+  position: relative; /* Position relative for absolute positioning of icons */
+
+  .comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .nickname {
+    font-weight: bold;
+    font-size: 16px;
+  }
+
+  .date {
+    font-size: 14px;
+    color: #888;
+  }
+
+  .comment-content {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #333;
+  }
+
+  .comment-actions {
+    display: flex;
+    gap: 10px;
+    position: absolute;
+    bottom: 10px; /* Place actions at the bottom */
+    right: 10px; /* Align to the right */
+  }
+`;
+
+export const PaginationContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+`;
+
+export const PageButton = styled.button`
+  padding: 5px 10px;
+  margin: 0 5px;
+  border: 1px solid #ddd;
+  background-color: ${({ active }) => (active ? "#333" : "white")};
+  color: ${({ active }) => (active ? "white" : "#333")};
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #333;
+    color: white;
+  }
+`;
+
+export const EditIcon = styled(FaEdit)`
+  cursor: pointer;
+  font-size: 16px;
+  color: #888;
+
+  &:hover {
+    color: #333;
+  }
+`;
+
+export const DeleteIcon = styled(FaTrashAlt)`
+  cursor: pointer;
+  font-size: 16px;
+  color: #888;
+
+  &:hover {
+    color: #333;
+  }
+`;
+
 export const Tag = styled.span`
   display: inline-block;
   background-color: #f1f1f1;
