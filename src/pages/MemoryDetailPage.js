@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   MemoryDetailContainer,
   Title,
@@ -18,19 +18,27 @@ import {
   PageButton,
   EditIcon,
   DeleteIcon,
+  Button,
 } from "../styles/MemoryDetailStyle";
 import CommentModal from "../components/CommentModal";
 import EditCommentModal from "../components/EditCommentModal";
 import DeleteCommentModal from "../components/DeleteCommentModal";
+import MemoryEditModal from "../components/MemoryEditModal.js";
+import MemoryDeleteModal from "../components/MemoryDeleteModal.js";
 
 const MemoryDetailPage = () => {
   const location = useLocation();
-  const { memory } = location.state;
+  const navigate = useNavigate();
+  const initialMemory = location.state.memory; // 최초 전달된 메모리 데이터
 
+  // 메모리 상태를 유지하기 위한 state
+  const [memory, setMemory] = useState(initialMemory);
   const [comments, setComments] = useState([]);
   const [isCommentModalOpen, setCommentModalOpen] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [isMemoryEditModalOpen, setMemoryEditModalOpen] = useState(false);
+  const [isMemoryDeleteModalOpen, setMemoryDeleteModalOpen] = useState(false);
   const [currentComment, setCurrentComment] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const commentsPerPage = 3;
@@ -71,14 +79,21 @@ const MemoryDetailPage = () => {
     }
   };
 
-  const handleEditClick = (comment) => {
-    setCurrentComment(comment);
-    setEditModalOpen(true);
+  const handleMemoryEditSubmit = (updatedMemory) => {
+    // Memory 수정 로직
+    setMemory(updatedMemory); // 상태 업데이트
+    alert("추억이 성공적으로 수정되었습니다.");
+    setMemoryEditModalOpen(false);
   };
 
-  const handleDeleteClick = (comment) => {
-    setCurrentComment(comment);
-    setDeleteModalOpen(true);
+  const handleMemoryDelete = (password) => {
+    // 비밀번호 확인 후 삭제 로직
+    if (password === memory.password) {
+      alert("추억이 성공적으로 삭제되었습니다.");
+      navigate("/"); // 추억 삭제 후 메인 페이지로 이동
+    } else {
+      alert("비밀번호가 일치하지 않습니다.");
+    }
   };
 
   const paginatedComments = comments.slice(
@@ -91,13 +106,19 @@ const MemoryDetailPage = () => {
       <Header>
         <ProjectTitle>조각집 🌼</ProjectTitle>
         <div>
-          <button>추억 수정하기</button>
-          <button>추억 삭제하기</button>
+          <Button onClick={() => setMemoryEditModalOpen(true)}>
+            추억 수정하기
+          </Button>
+          <Button onClick={() => setMemoryDeleteModalOpen(true)}>
+            추억 삭제하기
+          </Button>
         </div>
       </Header>
       <div>
         <span>{memory.nickname}</span>
-        <PublicStatus>{memory.isPublic ? "공개" : "비공개"}</PublicStatus>
+        <PublicStatus isPublic={memory.isPublic}>
+          {memory.isPublic ? "공개" : "비공개"}
+        </PublicStatus>
       </div>
       <Title>{memory.title}</Title>
       <div>
@@ -108,7 +129,7 @@ const MemoryDetailPage = () => {
           <span>조회수: {memory.views}</span>
           <span>공감: {memory.likes}</span>
         </InteractionInfo>
-        <button>공감 보내기</button>
+        <Button>공감 보내기</Button>
       </Info>
       <Image src={memory.imageUrl} alt={memory.title} />
       <Content>{memory.content}</Content>
@@ -119,7 +140,7 @@ const MemoryDetailPage = () => {
             .map((tag, index) => <Tag key={index}>#{tag.trim()}</Tag>)}
       </div>
       <ActionButtonContainer>
-        <button onClick={() => setCommentModalOpen(true)}>댓글 등록하기</button>
+        <Button onClick={() => setCommentModalOpen(true)}>댓글 등록하기</Button>
       </ActionButtonContainer>
 
       <CommentsContainer>
@@ -131,8 +152,18 @@ const MemoryDetailPage = () => {
             </div>
             <p className="comment-content">{comment.content}</p>
             <div className="comment-actions">
-              <EditIcon onClick={() => handleEditClick(comment)} />
-              <DeleteIcon onClick={() => handleDeleteClick(comment)} />
+              <EditIcon
+                onClick={() => {
+                  setCurrentComment(comment);
+                  setEditModalOpen(true); // 모달을 여는 동작 추가
+                }}
+              />
+              <DeleteIcon
+                onClick={() => {
+                  setCurrentComment(comment);
+                  setDeleteModalOpen(true); // 모달을 여는 동작 추가
+                }}
+              />
             </div>
           </Comment>
         ))}
@@ -170,6 +201,19 @@ const MemoryDetailPage = () => {
         <DeleteCommentModal
           onClose={() => setDeleteModalOpen(false)}
           onDelete={handleDeleteComment}
+        />
+      )}
+      {isMemoryEditModalOpen && (
+        <MemoryEditModal
+          memory={memory}
+          onClose={() => setMemoryEditModalOpen(false)}
+          onSubmit={handleMemoryEditSubmit}
+        />
+      )}
+      {isMemoryDeleteModalOpen && (
+        <MemoryDeleteModal
+          onClose={() => setMemoryDeleteModalOpen(false)}
+          onDelete={handleMemoryDelete}
         />
       )}
     </MemoryDetailContainer>

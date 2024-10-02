@@ -111,6 +111,19 @@ export const ActionButtonContainer = styled.div`
   }
 `;
 
+export const Button = styled.button`
+  background-color: black;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #333;
+  }
+`;
+
 export const CommentsContainer = styled.div`
   margin-top: 20px;
 `;
