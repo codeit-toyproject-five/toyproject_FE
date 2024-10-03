@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   GroupHeaderContainer,
   GroupImage,
@@ -18,8 +19,8 @@ import GroupDeleteModal from "./GroupDeleteModal";
 const GroupDetailHeader = ({ group, onGroupUpdate, onGroupDelete }) => {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const navigate = useNavigate(); // navigate 추가
 
-  // 그룹 이미지 URL을 생성합니다.
   const groupImageSrc =
     group.groupImage instanceof File
       ? URL.createObjectURL(group.groupImage)
@@ -31,6 +32,16 @@ const GroupDetailHeader = ({ group, onGroupUpdate, onGroupDelete }) => {
 
   const handleDeleteClick = () => {
     setIsDeleteModalOpen(true);
+  };
+
+  const handleGroupUpdate = (updatedGroup) => {
+    onGroupUpdate(updatedGroup);
+    // 그룹 공개 여부에 따른 리디렉션 처리
+    if (updatedGroup.isPublic) {
+      navigate("/"); // 공개 그룹 목록으로 이동
+    } else {
+      navigate("/private-group"); // 비공개 그룹 목록으로 이동
+    }
   };
 
   return (
@@ -66,13 +77,13 @@ const GroupDetailHeader = ({ group, onGroupUpdate, onGroupDelete }) => {
         <GroupUpdateModal
           group={group}
           onClose={() => setIsUpdateModalOpen(false)}
-          onUpdate={onGroupUpdate}
+          onUpdate={handleGroupUpdate}
         />
       )}
       {isDeleteModalOpen && (
         <GroupDeleteModal
           groupId={group.id}
-          groupPassword={group.password} // 그룹 비밀번호를 전달
+          groupPassword={group.password}
           onClose={() => setIsDeleteModalOpen(false)}
           onDelete={onGroupDelete}
         />

@@ -46,22 +46,18 @@ export const InputField = styled.input`
   width: 97%;
 `;
 
-export const TextArea = styled.textarea`
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  resize: none;
-  width: 97%;
-  height: 97px;
+export const Label = styled.label`
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: #333;
 `;
 
 export const ToggleSwitch = styled.label`
+  display: flex;
+  align-items: center;
+  gap: 10px;
   position: relative;
-  display: inline-block;
-  width: 50px;
-  height: 25px;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 
   input {
     opacity: 0;
@@ -70,27 +66,14 @@ export const ToggleSwitch = styled.label`
   }
 
   .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 25px;
     background-color: #ccc;
+    border-radius: 25px;
+    cursor: pointer;
     transition: 0.4s;
-    border-radius: 34px;
-  }
-
-  input:checked + .slider {
-    background-color: #4caf50;
-  }
-
-  .slider.round {
-    border-radius: 34px;
-  }
-
-  .slider.round:before {
-    border-radius: 50%;
   }
 
   .slider:before {
@@ -99,14 +82,18 @@ export const ToggleSwitch = styled.label`
     height: 20px;
     width: 20px;
     left: 4px;
-    bottom: 3px;
+    bottom: 2px;
     background-color: white;
-    transition: 0.4s;
     border-radius: 50%;
+    transition: 0.4s;
+  }
+
+  input:checked + .slider {
+    background-color: #4caf50;
   }
 
   input:checked + .slider:before {
-    transform: translateX(26px);
+    transform: translateX(25px);
   }
 `;
 
