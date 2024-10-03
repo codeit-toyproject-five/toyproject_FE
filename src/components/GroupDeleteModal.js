@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // navigate 사용
 import {
   ModalContainer,
   ModalContent,
@@ -8,17 +9,24 @@ import {
   ModalOverlay,
 } from "../styles/GroupDeleteModalStyle"; // 스타일 경로 확인 필요
 
-const GroupDeleteModal = ({ groupId, groups, onClose, onDelete }) => {
-  // groups를 props로 받음
+const GroupDeleteModal = ({ group, onClose, onDelete }) => {
   const [password, setPassword] = useState("");
+  const navigate = useNavigate(); // 리디렉션을 위한 navigate 추가
 
   const handleDeleteGroup = () => {
-    const group = groups.find((g) => g.id === groupId); // groups에서 해당 그룹을 찾음
+    // 비밀번호가 일치하는지 확인
     if (password === group.password) {
-      onDelete(groupId);
-      onClose();
+      onDelete(group.id); // 그룹 삭제 함수 호출
+      onClose(); // 모달 닫기
+
+      // 삭제 후 공개 여부에 따른 페이지 리디렉션
+      if (group.isPublic) {
+        navigate("/"); // 공개 그룹 페이지로 리디렉션
+      } else {
+        navigate("/private-group"); // 비공개 그룹 페이지로 리디렉션
+      }
     } else {
-      alert("비밀번호가 일치하지 않습니다.");
+      alert("비밀번호가 일치하지 않습니다."); // 비밀번호 불일치 경고
     }
   };
 

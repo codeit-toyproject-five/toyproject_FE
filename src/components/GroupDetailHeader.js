@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; // navigate 추가
 import {
   GroupHeaderContainer,
   GroupImage,
@@ -82,8 +82,7 @@ const GroupDetailHeader = ({ group, onGroupUpdate, onGroupDelete }) => {
       )}
       {isDeleteModalOpen && (
         <GroupDeleteModal
-          groupId={group.id}
-          groupPassword={group.password}
+          group={group} // group 객체를 모달로 전달
           onClose={() => setIsDeleteModalOpen(false)}
           onDelete={onGroupDelete}
         />
