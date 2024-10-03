@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   CreateGroupContainer,
   Form,
@@ -9,31 +10,45 @@ import {
   SubmitButton,
 } from "../styles/CreateGroupStyle";
 
-const CreateGroup = () => {
+const CreateGroup = ({ addGroup }) => {
   const [groupName, setGroupName] = useState("");
   const [groupImage, setGroupImage] = useState(null);
   const [groupDescription, setGroupDescription] = useState("");
   const [isPublic, setIsPublic] = useState(true);
   const [password, setPassword] = useState("");
+  const [author, setAuthor] = useState(""); // 작성자 추가
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!groupName) {
-      alert("그룹명을 입력해 주세요.");
+    if (!groupName || !password || !author) {
+      alert("그룹명, 비밀번호, 작성자를 입력해 주세요.");
       return;
     }
 
-    const groupData = {
-      groupName,
-      groupImage,
-      groupDescription,
-      isPublic,
-      password: isPublic ? null : password,
+    const newGroup = {
+      id: Date.now(),
+      groupName, // 그룹명
+      groupImage, // 이미지
+      description: groupDescription, // 그룹 소개는 공개/비공개 상관없이 작성 가능
+      isPublic, // 공개 여부
+      password, // 비밀번호
+      author, // 작성자
+      likes: 0,
+      views: 0,
+      memories: [],
     };
 
-    console.log("그룹 데이터 제출: ", groupData);
-    alert("그룹이 성공적으로 생성되었습니다.");
+    addGroup(newGroup);
+
+    if (isPublic) {
+      // 공개 그룹일 경우 공개 그룹 페이지로 이동
+      navigate("/");
+    } else {
+      // 비공개 그룹일 경우 비공개 그룹 목록 페이지로 이동
+      navigate("/private-group");
+    }
   };
 
   return (
@@ -58,6 +73,14 @@ const CreateGroup = () => {
           placeholder="그룹을 소개해 주세요"
         />
 
+        <Label>작성자</Label>
+        <Input
+          type="text"
+          value={author}
+          onChange={(e) => setAuthor(e.target.value)}
+          placeholder="작성자를 입력하세요"
+        />
+
         <Label>그룹 공개 선택</Label>
         <ToggleSwitch>
           <label>공개</label>
@@ -68,17 +91,13 @@ const CreateGroup = () => {
           />
         </ToggleSwitch>
 
-        {!isPublic && (
-          <>
-            <Label>비밀번호 생성</Label>
-            <Input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="그룹 비밀번호를 입력하세요"
-            />
-          </>
-        )}
+        <Label>비밀번호 생성</Label>
+        <Input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="그룹 비밀번호를 입력하세요"
+        />
 
         <SubmitButton type="submit">만들기</SubmitButton>
       </Form>

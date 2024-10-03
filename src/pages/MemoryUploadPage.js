@@ -25,7 +25,7 @@ const MemoryUploadPage = () => {
     location: "",
     date: "",
     isPublic: true,
-    password: "",
+    password: "", // 항상 비밀번호를 요구함
   });
 
   const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
@@ -44,7 +44,7 @@ const MemoryUploadPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!memoryData.isPublic && memoryData.password !== confirmedPassword) {
+    if (memoryData.password !== confirmedPassword) {
       setPasswordModalOpen(true); // 모달 열기 (비밀번호 확인)
     } else {
       const newMemory = {
@@ -167,15 +167,17 @@ const MemoryUploadPage = () => {
             </ToggleSwitchStyled>
             <span>{memoryData.isPublic ? "공개" : "비공개"}</span>
           </ToggleContainer>
-          {!memoryData.isPublic && (
-            <PasswordInput
-              type="password"
-              name="password"
-              placeholder="비밀번호를 입력해 주세요"
-              value={memoryData.password}
-              onChange={handleInputChange}
-            />
-          )}
+        </FormGroup>
+        {/* 공개 여부와 상관없이 비밀번호를 항상 입력하도록 변경 */}
+        <FormGroup>
+          <Label>비밀번호</Label>
+          <PasswordInput
+            type="password"
+            name="password"
+            placeholder="비밀번호를 입력해 주세요"
+            value={memoryData.password}
+            onChange={handleInputChange}
+          />
         </FormGroup>
         <SubmitButton type="submit">올리기</SubmitButton>
       </UploadForm>

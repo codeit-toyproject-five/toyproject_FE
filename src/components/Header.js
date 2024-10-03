@@ -1,4 +1,3 @@
-// src/components/Header.js
 import React from "react";
 import { Link, useNavigate } from "react-router-dom"; // useNavigate 추가
 import {
@@ -20,7 +19,7 @@ const Header = ({ isPublic, setIsPublic }) => {
 
   const handlePrivateGroupClick = () => {
     setIsPublic(false); // 비공개 그룹 선택 시 상태 변경
-    navigate("/private-group-access"); // 비공개 그룹 접근 페이지로 이동
+    navigate("/private-group"); // 비공개 그룹 페이지로 바로 이동
   };
 
   return (

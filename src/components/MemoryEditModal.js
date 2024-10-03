@@ -7,6 +7,7 @@ import {
   TextArea,
   SubmitButton,
   ToggleSwitchStyled,
+  PublicStatusText,
 } from "../styles/ModalStyles";
 
 const MemoryEditModal = ({ onClose, onSubmit, memory }) => {
@@ -118,6 +119,9 @@ const MemoryEditModal = ({ onClose, onSubmit, memory }) => {
             />
             <span className="slider round"></span>
           </ToggleSwitchStyled>
+          <PublicStatusText isPublic={isPublic}>
+            {isPublic ? "공개" : "비공개"}
+          </PublicStatusText>
         </div>
 
         <InputField

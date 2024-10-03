@@ -125,3 +125,10 @@ export const ToggleSwitchStyled = styled.label`
     transform: translateX(26px);
   }
 `;
+
+export const PublicStatusText = styled.span`
+  font-size: 16px;
+  color: ${(props) => (props.isPublic ? "green" : "red")};
+  font-weight: bold;
+  margin-left: 10px;
+`;

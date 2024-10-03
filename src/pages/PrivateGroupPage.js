@@ -1,41 +1,33 @@
-// src/pages/PrivateGroupPage.js
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import {
   GroupListContainer,
-  EmptyState,
-  EmptyMessage,
-  CreateGroupButton,
+  GroupCard,
+  GroupCardTitle,
+  GroupCardContent,
 } from "../styles/PrivateGroupPageStyle";
 
-const PrivateGroupPage = () => {
-  const privateGroups = []; // 비공개 그룹 데이터가 없다는 가정
-
+const PrivateGroupPage = ({ groups }) => {
   const navigate = useNavigate();
 
-  const handleCreateGroupClick = () => {
-    navigate("/create-group");
+  const handleGroupClick = (group) => {
+    navigate(`/private-group-access`, { state: { groupId: group.id } });
   };
 
   return (
     <GroupListContainer>
-      {privateGroups.length > 0 ? (
-        privateGroups.map((group) => (
-          <div key={group.id}>
-            {/* 그룹 카드 컴포넌트 등을 여기에 렌더링 */}
-          </div>
-        ))
+      {groups.length > 0 ? (
+        groups
+          .filter((group) => !group.isPublic)
+          .map((group) => (
+            <GroupCard key={group.id} onClick={() => handleGroupClick(group)}>
+              <GroupCardContent>
+                <GroupCardTitle>{group.groupName}</GroupCardTitle>
+              </GroupCardContent>
+            </GroupCard>
+          ))
       ) : (
-        <EmptyState>
-          <EmptyMessage>
-            <img src="/empty-icon.png" alt="empty" />
-            <p>등록된 비공개 그룹이 없습니다.</p>
-            <p>가장 먼저 그룹을 만들어보세요!</p>
-          </EmptyMessage>
-          <CreateGroupButton onClick={handleCreateGroupClick}>
-            그룹 만들기
-          </CreateGroupButton>
-        </EmptyState>
+        <p>등록된 비공개 그룹이 없습니다.</p>
       )}
     </GroupListContainer>
   );

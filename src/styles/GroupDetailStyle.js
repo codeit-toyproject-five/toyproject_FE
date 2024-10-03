@@ -5,12 +5,12 @@ export const GroupDetailContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; // 수직 중앙 정렬 추가
+  justify-content: center;
   padding: 20px;
   background-color: #f8f9fa;
   width: 100%;
   max-width: 1200px;
-  margin: 0 auto; // 좌우 중앙 정렬
+  margin: 0 auto;
 `;
 
 // 필터 및 검색 부분 컨테이너
@@ -24,7 +24,7 @@ export const FilterContainer = styled.div`
   padding: 0 20px;
 
   @media (max-width: 768px) {
-    flex-direction: column; // 작은 화면에서는 세로 정렬
+    flex-direction: column;
     align-items: center;
   }
 `;
@@ -42,16 +42,16 @@ export const FilterButton = styled.button`
 
 // 검색 입력창 스타일
 export const SearchInput = styled.input`
-  flex: 5; // 검색창을 더 길게 설정
+  flex: 5;
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 20px;
   margin-left: 10px;
-  max-width: 1000px; // 더 넓은 크기로 조정
+  max-width: 1000px;
   min-width: 700px;
 
   @media (max-width: 768px) {
-    max-width: 100%; // 작은 화면에서는 전체 너비로 확장
+    max-width: 100%;
     margin-left: 0;
   }
 `;
@@ -121,7 +121,7 @@ export const GroupActionsContainer = styled.div`
   display: flex;
   gap: 10px;
   position: absolute;
-  top: 10px; // 컨테이너 내부에 위치시킴
-  right: 20px; // 컨테이너 안쪽에 맞춰 배치
+  top: 10px;
+  right: 20px;
   margin-top: 10px;
 `;

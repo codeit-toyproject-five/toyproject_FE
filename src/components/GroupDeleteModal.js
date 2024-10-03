@@ -6,15 +6,20 @@ import {
   InputField,
   SubmitButton,
   ModalOverlay,
-} from "../styles/GroupDeleteModalStyle.js"; // 스타일 임포트
+} from "../styles/GroupDeleteModalStyle"; // 스타일 경로 확인 필요
 
-const GroupDeleteModal = ({ onClose }) => {
-  const [password, setPassword] = useState(""); // 비밀번호 상태
+const GroupDeleteModal = ({ groupId, groups, onClose, onDelete }) => {
+  // groups를 props로 받음
+  const [password, setPassword] = useState("");
 
   const handleDeleteGroup = () => {
-    // 삭제 로직을 구현 (예: 서버로 API 요청)
-    console.log("그룹 삭제 비밀번호:", password);
-    onClose(); // 모달 닫기
+    const group = groups.find((g) => g.id === groupId); // groups에서 해당 그룹을 찾음
+    if (password === group.password) {
+      onDelete(groupId);
+      onClose();
+    } else {
+      alert("비밀번호가 일치하지 않습니다.");
+    }
   };
 
   return (

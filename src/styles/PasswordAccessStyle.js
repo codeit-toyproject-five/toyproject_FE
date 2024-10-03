@@ -6,31 +6,28 @@ export const PasswordAccessContainer = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh;
-  text-align: center;
-  padding: 20px;
-  box-sizing: border-box;
-  margin: 0;
+  background-color: #f8f9fa;
 `;
 
 export const PasswordInput = styled.input`
   padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
   font-size: 16px;
   width: 300px;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
 `;
 
 export const SubmitButton = styled.button`
   padding: 10px 20px;
-  font-size: 16px;
-  background-color: black;
+  background-color: #333;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 16px;
+
   &:hover {
-    background-color: darkgray;
+    background-color: #555;
   }
 `;
