@@ -37,6 +37,7 @@ const PrivateGroupPage = () => {
           <GroupCard key={group.id} onClick={() => handleGroupClick(group)}>
             <GroupCardContent>
               <GroupCardTitle>{group.name}</GroupCardTitle> {/* 그룹명 표시 */}
+              <p>좋아요: {group.likes}</p> {/* 공감 수 표시 */}
             </GroupCardContent>
           </GroupCard>
         ))

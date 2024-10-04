@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // navigate 사용
+import { useNavigate } from "react-router-dom";
+import { deleteGroup } from "../api/groupApi"; // 그룹 삭제 API 함수 import
 import {
   ModalContainer,
   ModalContent,
@@ -7,26 +8,29 @@ import {
   InputField,
   SubmitButton,
   ModalOverlay,
-} from "../styles/GroupDeleteModalStyle"; // 스타일 경로 확인 필요
+} from "../styles/GroupDeleteModalStyle";
 
 const GroupDeleteModal = ({ group, onClose, onDelete }) => {
   const [password, setPassword] = useState("");
-  const navigate = useNavigate(); // 리디렉션을 위한 navigate 추가
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  const handleDeleteGroup = () => {
-    // 비밀번호가 일치하는지 확인
-    if (password === group.password) {
-      onDelete(group.id); // 그룹 삭제 함수 호출
+  const handleDeleteGroup = async () => {
+    try {
+      // 서버에 그룹 삭제 요청
+      await deleteGroup(group.id, password);
+      onDelete(group.id); // 상위 컴포넌트에 삭제된 그룹 ID 전달
       onClose(); // 모달 닫기
 
-      // 삭제 후 공개 여부에 따른 페이지 리디렉션
+      // 그룹 공개 여부에 따른 페이지 리디렉션
       if (group.isPublic) {
         navigate("/"); // 공개 그룹 페이지로 리디렉션
       } else {
         navigate("/private-group"); // 비공개 그룹 페이지로 리디렉션
       }
-    } else {
-      alert("비밀번호가 일치하지 않습니다."); // 비밀번호 불일치 경고
+    } catch (error) {
+      // 에러 처리
+      setError("비밀번호가 일치하지 않거나 삭제 중 오류가 발생했습니다.");
     }
   };
 
@@ -44,6 +48,7 @@ const GroupDeleteModal = ({ group, onClose, onDelete }) => {
             placeholder="그룹 비밀번호를 입력해 주세요"
           />
           <SubmitButton onClick={handleDeleteGroup}>삭제하기</SubmitButton>
+          {error && <p style={{ color: "red" }}>{error}</p>}
         </ModalContent>
       </ModalContainer>
     </ModalOverlay>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { likeGroup } from "../api/groupApi"; // likeGroup 함수 추가
 import {
   GroupHeaderContainer,
   GroupImage,
@@ -19,6 +20,7 @@ import GroupDeleteModal from "./GroupDeleteModal";
 const GroupDetailHeader = ({ group, onGroupUpdate, onGroupDelete }) => {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [likes, setLikes] = useState(group.likes || 0); // 공감 수를 상태로 관리
   const navigate = useNavigate();
 
   const handleUpdateClick = () => {
@@ -31,11 +33,22 @@ const GroupDetailHeader = ({ group, onGroupUpdate, onGroupDelete }) => {
 
   const handleGroupUpdate = (updatedGroup) => {
     onGroupUpdate(updatedGroup);
-    // Redirect based on group visibility
     if (updatedGroup.isPublic) {
       navigate("/"); // Navigate to public groups
     } else {
       navigate("/private-group"); // Navigate to private groups
+    }
+  };
+
+  const handleLikeClick = async () => {
+    try {
+      const response = await likeGroup(group.id); // likeGroup API 호출
+      if (response.message === "그룹 공감하기 성공") {
+        setLikes((prevLikes) => prevLikes + 1); // 공감 수 증가
+      }
+    } catch (error) {
+      console.error("Error liking group:", error);
+      // 오류 처리
     }
   };
 
@@ -49,7 +62,7 @@ const GroupDetailHeader = ({ group, onGroupUpdate, onGroupDelete }) => {
         <GroupDescription>{group.introduction}</GroupDescription>
         <GroupStatistics>
           <span>추억 {group.memories?.length || 0}</span> |{" "}
-          <span>그룹 공감 {group.likes || 0}K</span>
+          <span>그룹 공감 {likes}</span> {/* likes 상태를 사용 */}
         </GroupStatistics>
         <BadgeContainer>
           <Badge>🌟 7일 연속 추억 등록</Badge>
@@ -65,8 +78,10 @@ const GroupDetailHeader = ({ group, onGroupUpdate, onGroupDelete }) => {
           그룹 삭제하기
         </GroupLinkButton>
       </GroupActionsContainer>
-      <GroupActionButtonSmall>공감 보내기</GroupActionButtonSmall>
-
+      <GroupActionButtonSmall onClick={handleLikeClick}>
+        공감 보내기
+      </GroupActionButtonSmall>{" "}
+      {/* 공감 보내기 버튼에 클릭 이벤트 추가 */}
       {isUpdateModalOpen && (
         <GroupUpdateModal
           group={group}
