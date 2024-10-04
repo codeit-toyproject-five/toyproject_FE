@@ -28,7 +28,7 @@ const MemoryUploadPage = ({ groups, addMemoryToGroup }) => {
     location: "",
     date: "",
     isPublic: true,
-    password: "", // 추억 비밀번호
+    password: "", // 추억 비밀번호 (비공개 추억에만 사용)
   });
 
   const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
@@ -53,7 +53,7 @@ const MemoryUploadPage = ({ groups, addMemoryToGroup }) => {
       !memoryData.content ||
       !memoryData.location ||
       !memoryData.date ||
-      !memoryData.password
+      (!memoryData.isPublic && !memoryData.password) // 비공개 추억일 경우 비밀번호 필수
     ) {
       alert("모든 필드를 입력해 주세요.");
       return;
@@ -63,8 +63,9 @@ const MemoryUploadPage = ({ groups, addMemoryToGroup }) => {
     setPasswordModalOpen(true);
   };
 
-  const handleModalSubmit = (password) => {
-    if (password === group.password) {
+  const handleModalSubmit = (groupPassword) => {
+    // 그룹 비밀번호를 확인하고 추억 생성
+    if (groupPassword === group.password) {
       setPasswordModalOpen(false);
 
       const newMemory = {
@@ -78,7 +79,7 @@ const MemoryUploadPage = ({ groups, addMemoryToGroup }) => {
         location: memoryData.location,
         date: memoryData.date,
         isPublic: memoryData.isPublic,
-        password: memoryData.password, // 추억 비밀번호
+        password: memoryData.isPublic ? null : memoryData.password, // 비공개일 경우 추억 비밀번호 저장
         likes: 0,
         views: 0,
       };
@@ -188,18 +189,19 @@ const MemoryUploadPage = ({ groups, addMemoryToGroup }) => {
             <span>{memoryData.isPublic ? "공개" : "비공개"}</span>
           </ToggleContainer>
         </FormGroup>
-        {/* 추억 비밀번호 입력 필드 */}
-        <FormGroup>
-          <Label>추억 생성 비밀번호</Label>
-          <PasswordInput
-            type="password"
-            name="password"
-            placeholder="비밀번호를 입력해 주세요"
-            value={memoryData.password}
-            onChange={handleInputChange}
-            required
-          />
-        </FormGroup>
+        {!memoryData.isPublic && (
+          <FormGroup>
+            <Label>추억 비밀번호</Label>
+            <PasswordInput
+              type="password"
+              name="password"
+              placeholder="비밀번호를 입력해 주세요"
+              value={memoryData.password}
+              onChange={handleInputChange}
+              required={!memoryData.isPublic}
+            />
+          </FormGroup>
+        )}
         <SubmitButton type="submit">올리기</SubmitButton>
       </UploadForm>
       <CloseButton onClick={handleCloseModal}>×</CloseButton>

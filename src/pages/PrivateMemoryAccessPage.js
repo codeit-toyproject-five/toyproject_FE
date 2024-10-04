@@ -52,7 +52,7 @@ const PrivateMemoryAccessPage = ({ groups }) => {
   return (
     <PasswordAccessContainer>
       <h2>{memory?.title}에 접근</h2>
-      <p>비공개 추억에 접근하기 위해 비밀번호를 입력하세요.</p>
+      <p>비공개 추억에 접근하기 위해 추억 비밀번호를 입력하세요.</p>
       <form onSubmit={handleSubmit}>
         <PasswordInput
           type="password"
