@@ -1,3 +1,4 @@
+// src/pages/CreateGroup.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -37,7 +38,7 @@ const CreateGroup = ({ addGroup }) => {
       author, // 작성자
       likes: 0,
       views: 0,
-      memories: [],
+      memories: [], // 추억 배열 초기화
     };
 
     addGroup(newGroup);
@@ -83,12 +84,13 @@ const CreateGroup = ({ addGroup }) => {
 
         <Label>그룹 공개 선택</Label>
         <ToggleSwitch>
-          <label>공개</label>
           <input
             type="checkbox"
             checked={isPublic}
             onChange={() => setIsPublic(!isPublic)}
           />
+          <span></span>
+          <span>{isPublic ? "공개" : "비공개"}</span>
         </ToggleSwitch>
 
         <Label>비밀번호 생성</Label>

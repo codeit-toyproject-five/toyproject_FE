@@ -1,20 +1,24 @@
+// src/pages/PrivateMemories.js
 import React from "react";
 import {
   MemoryListContainer,
+  MemoryCard,
+  MemoryInfo,
   EmptyMessageContainer,
   EmptyMessage,
-} from "../styles/GroupDetailStyle"; // 스타일 임포트
+} from "../styles/GroupDetailStyle";
 
 const PrivateMemories = ({ memories }) => {
-  const privateMemories = memories.filter((memory) => !memory.isPublic); // 비공개된 추억만 필터링
-
   return (
     <MemoryListContainer>
-      {privateMemories.length > 0 ? (
-        privateMemories.map((memory) => (
-          <div key={memory.id}>
-            <p>{memory.title}</p>
-          </div>
+      {memories && memories.length > 0 ? (
+        memories.map((memory) => (
+          <MemoryCard key={memory.id}>
+            <MemoryInfo>
+              <p>작성자: {memory.nickname}</p>
+              <p>제목: {memory.title}</p>
+            </MemoryInfo>
+          </MemoryCard>
         ))
       ) : (
         <EmptyMessageContainer>

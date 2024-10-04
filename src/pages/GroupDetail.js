@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useLocation } from "react-router-dom";
+// src/pages/GroupDetail.js
+import React from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import GroupDetailHeader from "../components/GroupDetailHeader";
 import PublicMemories from "./PublicMemories";
 import PrivateMemories from "./PrivateMemories";
@@ -10,20 +11,20 @@ import {
   PostButton,
 } from "../styles/GroupDetailStyle";
 
-const GroupDetail = ({ groups, onGroupDelete, onGroupUpdate }) => {
+const GroupDetail = ({
+  groups,
+  onGroupDelete,
+  onGroupUpdate,
+  addMemoryToGroup,
+}) => {
   const { id } = useParams();
   const group = groups.find((group) => group.id === parseInt(id));
-  const location = useLocation();
-  const [isPublicMemory, setIsPublicMemory] = useState(true);
+  const navigate = useNavigate();
+  const [isPublicMemory, setIsPublicMemory] = React.useState(true);
 
-  useEffect(() => {
-    if (location.state?.isPrivateMemory) {
-      setIsPublicMemory(false);
-    }
-  }, [location.state]);
-
-  const publicMemories = group?.memories.filter((memory) => memory.isPublic);
-  const privateMemories = group?.memories.filter((memory) => !memory.isPublic);
+  const handleUploadMemory = () => {
+    navigate(`/memory-upload/${group.id}`);
+  };
 
   const handlePublicMemories = () => {
     setIsPublicMemory(true);
@@ -55,13 +56,17 @@ const GroupDetail = ({ groups, onGroupDelete, onGroupUpdate }) => {
             비공개
           </FilterButton>
         </div>
-        <PostButton>추억 올리기</PostButton>
+        <PostButton onClick={handleUploadMemory}>추억 올리기</PostButton>
       </FilterContainer>
 
       {isPublicMemory ? (
-        <PublicMemories memories={publicMemories} />
+        <PublicMemories
+          memories={group?.memories.filter((memory) => memory.isPublic)}
+        />
       ) : (
-        <PrivateMemories memories={privateMemories} />
+        <PrivateMemories
+          memories={group?.memories.filter((memory) => !memory.isPublic)}
+        />
       )}
     </GroupDetailContainer>
   );

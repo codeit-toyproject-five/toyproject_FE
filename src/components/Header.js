@@ -1,5 +1,6 @@
+// Header.js
 import React from "react";
-import { Link, useNavigate } from "react-router-dom"; // useNavigate 추가
+import { Link, useNavigate } from "react-router-dom";
 import {
   HeaderContainer,
   Logo,
@@ -10,16 +11,16 @@ import {
 } from "../styles/HeaderStyle";
 
 const Header = ({ isPublic, setIsPublic }) => {
-  const navigate = useNavigate(); // useNavigate 사용
+  const navigate = useNavigate();
 
   const handlePublicGroupClick = () => {
-    setIsPublic(true); // 공개 그룹 선택 시 상태 변경
-    navigate("/"); // 공개 그룹 페이지로 이동
+    setIsPublic(true);
+    navigate("/");
   };
 
   const handlePrivateGroupClick = () => {
-    setIsPublic(false); // 비공개 그룹 선택 시 상태 변경
-    navigate("/private-group"); // 비공개 그룹 페이지로 바로 이동
+    setIsPublic(false);
+    navigate("/private-group");
   };
 
   return (

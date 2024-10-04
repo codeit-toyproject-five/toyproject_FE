@@ -1,5 +1,6 @@
+// GroupDetailHeader.js
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // navigate 추가
+import { useNavigate } from "react-router-dom";
 import {
   GroupHeaderContainer,
   GroupImage,
@@ -19,7 +20,7 @@ import GroupDeleteModal from "./GroupDeleteModal";
 const GroupDetailHeader = ({ group, onGroupUpdate, onGroupDelete }) => {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const navigate = useNavigate(); // navigate 추가
+  const navigate = useNavigate();
 
   const groupImageSrc =
     group.groupImage instanceof File

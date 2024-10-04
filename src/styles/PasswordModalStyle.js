@@ -1,5 +1,7 @@
+// src/styles/PasswordModalStyle.js
 import styled from "styled-components";
 
+// 기존 스타일 유지
 export const ModalContainer = styled.div`
   position: fixed;
   top: 0;
@@ -62,3 +64,8 @@ export const Button = styled.button`
     background-color: #555;
   }
 `;
+
+// 추가된 스타일 컴포넌트들
+export const InputField = styled(Input)``;
+
+export const SubmitButton = styled(Button)``;

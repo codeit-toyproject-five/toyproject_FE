@@ -1,38 +1,41 @@
+// src/components/PasswordModal.js
 import React, { useState } from "react";
 import {
   ModalContainer,
   ModalContent,
-  ModalHeader,
   CloseButton,
+  InputField,
+  SubmitButton,
+  ModalHeader,
   ModalBody,
-  Input,
-  Button,
 } from "../styles/PasswordModalStyle";
 
-const PasswordModal = ({ onSubmit, onClose }) => {
+const PasswordModal = ({ onSubmit, onClose, title, placeholder }) => {
   const [password, setPassword] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(password); // 비밀번호 전달
+    setPassword("");
   };
 
   return (
     <ModalContainer>
       <ModalContent>
         <ModalHeader>
-          <h3>추억 올리기</h3>
+          <h3>{title}</h3>
           <CloseButton onClick={onClose}>&times;</CloseButton>
         </ModalHeader>
         <ModalBody>
           <form onSubmit={handleSubmit}>
-            <Input
+            <InputField
               type="password"
-              placeholder="그룹 비밀번호를 입력해 주세요"
+              placeholder={placeholder}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
             />
-            <Button type="submit">제출하기</Button>
+            <SubmitButton type="submit">제출하기</SubmitButton>
           </form>
         </ModalBody>
       </ModalContent>

@@ -1,5 +1,6 @@
+// src/pages/MemoryUploadPage.js
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   UploadContainer,
   UploadForm,
@@ -15,7 +16,9 @@ import {
 } from "../styles/MemoryUploadStyle";
 import PasswordModal from "../components/PasswordModal";
 
-const MemoryUploadPage = () => {
+const MemoryUploadPage = ({ groups, addMemoryToGroup }) => {
+  const { groupId } = useParams(); // URL에서 그룹 ID 가져오기
+  const group = groups.find((g) => g.id === parseInt(groupId));
   const [memoryData, setMemoryData] = useState({
     nickname: "",
     title: "",
@@ -25,11 +28,11 @@ const MemoryUploadPage = () => {
     location: "",
     date: "",
     isPublic: true,
-    password: "", // 항상 비밀번호를 요구함
+    password: "", // 추억 비밀번호
   });
 
   const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
-  const [confirmedPassword, setConfirmedPassword] = useState(""); // 모달에서 받은 비밀번호 저장
+  // Removed the groupPassword state
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -44,40 +47,55 @@ const MemoryUploadPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (memoryData.password !== confirmedPassword) {
-      setPasswordModalOpen(true); // 모달 열기 (비밀번호 확인)
-    } else {
-      const newMemory = {
-        ...memoryData,
-        id: Date.now(), // 고유한 ID
-        imageUrl: URL.createObjectURL(memoryData.image), // 이미지 URL 생성
-      };
-
-      // 추억 업로드 후 상세 페이지로 이동
-      navigate("/memory-detail", { state: { memory: newMemory } });
+    // 필수 입력 필드 확인
+    if (
+      !memoryData.nickname ||
+      !memoryData.title ||
+      !memoryData.content ||
+      !memoryData.location ||
+      !memoryData.date ||
+      !memoryData.password
+    ) {
+      alert("모든 필드를 입력해 주세요.");
+      return;
     }
+
+    // 그룹 비밀번호 인증을 위해 모달 열기
+    setPasswordModalOpen(true);
   };
 
   const handleModalSubmit = (password) => {
-    if (password === memoryData.password) {
-      setConfirmedPassword(password);
-      setPasswordModalOpen(false); // 모달 닫기
+    if (password === group.password) {
+      // Removed setGroupPassword(password);
+      setPasswordModalOpen(false);
 
       const newMemory = {
-        ...memoryData,
-        id: Date.now(), // 고유한 ID
-        imageUrl: URL.createObjectURL(memoryData.image), // 이미지 URL 생성
+        id: Date.now(),
+        nickname: memoryData.nickname,
+        title: memoryData.title,
+        imageUrl: memoryData.image ? URL.createObjectURL(memoryData.image) : "",
+        content: memoryData.content,
+        tags: memoryData.tags,
+        location: memoryData.location,
+        date: memoryData.date,
+        isPublic: memoryData.isPublic,
+        password: memoryData.password, // 추억 비밀번호
+        likes: 0,
+        views: 0,
       };
 
-      // 비밀번호 확인 후 추억 상세 페이지로 이동
-      navigate("/memory-detail", { state: { memory: newMemory } });
+      addMemoryToGroup(group.id, newMemory);
+
+      alert("추억이 성공적으로 생성되었습니다.");
+
+      navigate(`/group/${group.id}`); // Corrected navigate syntax
     } else {
-      alert("비밀번호가 일치하지 않습니다.");
+      alert("그룹 비밀번호가 일치하지 않습니다.");
     }
   };
 
   const handleModalClose = () => {
-    setPasswordModalOpen(false); // 모달 닫기
+    setPasswordModalOpen(false);
   };
 
   const handleCloseModal = () => {
@@ -168,9 +186,9 @@ const MemoryUploadPage = () => {
             <span>{memoryData.isPublic ? "공개" : "비공개"}</span>
           </ToggleContainer>
         </FormGroup>
-        {/* 공개 여부와 상관없이 비밀번호를 항상 입력하도록 변경 */}
+        {/* 추억 비밀번호 입력 필드 */}
         <FormGroup>
-          <Label>비밀번호</Label>
+          <Label>추억 생성 비밀번호</Label>
           <PasswordInput
             type="password"
             name="password"
@@ -187,6 +205,8 @@ const MemoryUploadPage = () => {
         <PasswordModal
           onSubmit={handleModalSubmit}
           onClose={handleModalClose}
+          title="그룹 비밀번호 인증"
+          placeholder="그룹 비밀번호를 입력해 주세요"
         />
       )}
     </UploadContainer>

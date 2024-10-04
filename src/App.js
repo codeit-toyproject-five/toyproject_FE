@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Header from "./components/Header";
@@ -26,6 +27,17 @@ function App() {
     setGroups(
       groups.map((group) =>
         group.id === updatedGroup.id ? updatedGroup : group
+      )
+    );
+  };
+
+  // 그룹에 추억 추가 함수
+  const addMemoryToGroup = (groupId, newMemory) => {
+    setGroups(
+      groups.map((group) =>
+        group.id === groupId
+          ? { ...group, memories: [...group.memories, newMemory] }
+          : group
       )
     );
   };
@@ -75,10 +87,19 @@ function App() {
               groups={groups}
               onGroupDelete={deleteGroup}
               onGroupUpdate={updateGroup}
+              addMemoryToGroup={addMemoryToGroup} // 추가된 props
             />
           }
         />
-        <Route path="/memory-upload" element={<MemoryUploadPage />} />
+        <Route
+          path="/memory-upload/:groupId"
+          element={
+            <MemoryUploadPage
+              groups={groups}
+              addMemoryToGroup={addMemoryToGroup}
+            />
+          }
+        />
       </Routes>
     </Router>
   );

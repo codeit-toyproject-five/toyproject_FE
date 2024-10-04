@@ -1,3 +1,4 @@
+// src/styles/GroupDetailStyle.js
 import styled from "styled-components";
 
 // 전체 컨테이너
@@ -124,4 +125,30 @@ export const GroupActionsContainer = styled.div`
   top: 10px;
   right: 20px;
   margin-top: 10px;
+`;
+
+// 추가된 스타일 컴포넌트들
+
+// MemoryCard: 추억을 카드 형태로 표시
+export const MemoryCard = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 8px;
+`;
+
+// MemoryImage: 추억에 업로드된 이미지 표시
+export const MemoryImage = styled.img`
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+`;
+
+// MemoryInfo: 추억의 세부 정보를 담는 컨테이너
+export const MemoryInfo = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
