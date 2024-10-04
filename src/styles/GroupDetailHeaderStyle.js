@@ -6,7 +6,7 @@ export const GroupHeaderContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  max-width: 1200px; /* 디테일 섹션과 동일하게 크기 설정 */
+  max-width: 1150px; /* 디테일 섹션과 동일하게 크기 설정 */
   background-color: white;
   padding: 20px;
   border-radius: 8px;
@@ -62,7 +62,7 @@ export const BadgeContainer = styled.div`
 // 배지 스타일
 export const Badge = styled.span`
   display: inline-block;
-  padding: 5px 15px;
+  padding: 4px 12px;
   background-color: #f1f1f1;
   color: #333;
   border-radius: 20px;

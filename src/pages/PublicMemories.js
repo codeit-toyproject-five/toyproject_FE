@@ -1,40 +1,39 @@
-// src/pages/PublicMemories.js
 import React from "react";
 import {
-  MemoryListContainer,
-  MemoryCard,
+  PublicMemoryListContainer,
+  PublicMemoryCard,
   MemoryImage,
   MemoryInfo,
-  EmptyMessageContainer,
-  EmptyMessage,
-} from "../styles/GroupDetailStyle";
+  Tags,
+} from "../styles/PublicMemoryStyle";
 
 const PublicMemories = ({ memories }) => {
   return (
-    <MemoryListContainer>
+    <PublicMemoryListContainer>
       {memories && memories.length > 0 ? (
         memories.map((memory) => (
-          <MemoryCard key={memory.id}>
+          <PublicMemoryCard key={memory.id}>
             {memory.imageUrl && (
               <MemoryImage src={memory.imageUrl} alt={memory.title} />
             )}
             <MemoryInfo>
-              <p>작성자: {memory.nickname}</p>
-              <p>제목: {memory.title}</p>
-              <p>장소: {memory.location}</p>
+              <p>{memory.nickname} | 공개</p>
+              <h3>{memory.title}</h3>
+              <Tags>
+                {memory.tags.split(",").map((tag, index) => (
+                  <span key={index}>#{tag.trim()}</span>
+                ))}
+              </Tags>
+              <p>
+                {memory.location} ・ {memory.date}
+              </p>
             </MemoryInfo>
-          </MemoryCard>
+          </PublicMemoryCard>
         ))
       ) : (
-        <EmptyMessageContainer>
-          <EmptyMessage>
-            <img src="/empty-icon.png" alt="empty" />
-            <p>게시된 공개 추억이 없습니다.</p>
-            <p>첫 번째 공개 추억을 올려보세요!</p>
-          </EmptyMessage>
-        </EmptyMessageContainer>
+        <p>게시된 공개 추억이 없습니다.</p>
       )}
-    </MemoryListContainer>
+    </PublicMemoryListContainer>
   );
 };
 

@@ -1,4 +1,3 @@
-// src/pages/GroupDetail.js
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import GroupDetailHeader from "../components/GroupDetailHeader";
