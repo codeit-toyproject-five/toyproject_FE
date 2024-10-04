@@ -1,4 +1,3 @@
-// GroupDetailHeader.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -22,11 +21,6 @@ const GroupDetailHeader = ({ group, onGroupUpdate, onGroupDelete }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const navigate = useNavigate();
 
-  const groupImageSrc =
-    group.groupImage instanceof File
-      ? URL.createObjectURL(group.groupImage)
-      : group.groupImage;
-
   const handleUpdateClick = () => {
     setIsUpdateModalOpen(true);
   };
@@ -37,22 +31,22 @@ const GroupDetailHeader = ({ group, onGroupUpdate, onGroupDelete }) => {
 
   const handleGroupUpdate = (updatedGroup) => {
     onGroupUpdate(updatedGroup);
-    // 그룹 공개 여부에 따른 리디렉션 처리
+    // Redirect based on group visibility
     if (updatedGroup.isPublic) {
-      navigate("/"); // 공개 그룹 목록으로 이동
+      navigate("/"); // Navigate to public groups
     } else {
-      navigate("/private-group"); // 비공개 그룹 목록으로 이동
+      navigate("/private-group"); // Navigate to private groups
     }
   };
 
   return (
     <GroupHeaderContainer>
-      {groupImageSrc && (
-        <GroupImage src={groupImageSrc} alt={group.groupName || group.title} />
+      {group.imageUrl && (
+        <GroupImage src={group.imageUrl} alt={group.name || group.title} />
       )}
       <GroupInfo>
-        <GroupTitle>{group.groupName || group.title}</GroupTitle>
-        <GroupDescription>{group.description}</GroupDescription>
+        <GroupTitle>{group.name || group.title}</GroupTitle>
+        <GroupDescription>{group.introduction}</GroupDescription>
         <GroupStatistics>
           <span>추억 {group.memories?.length || 0}</span> |{" "}
           <span>그룹 공감 {group.likes || 0}K</span>
@@ -73,7 +67,6 @@ const GroupDetailHeader = ({ group, onGroupUpdate, onGroupDelete }) => {
       </GroupActionsContainer>
       <GroupActionButtonSmall>공감 보내기</GroupActionButtonSmall>
 
-      {/* Modals */}
       {isUpdateModalOpen && (
         <GroupUpdateModal
           group={group}
@@ -83,7 +76,7 @@ const GroupDetailHeader = ({ group, onGroupUpdate, onGroupDelete }) => {
       )}
       {isDeleteModalOpen && (
         <GroupDeleteModal
-          group={group} // group 객체를 모달로 전달
+          group={group}
           onClose={() => setIsDeleteModalOpen(false)}
           onDelete={onGroupDelete}
         />

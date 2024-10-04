@@ -1,9 +1,9 @@
-// src/pages/GroupDetail.js
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import GroupDetailHeader from "../components/GroupDetailHeader";
 import PublicMemories from "./PublicMemories";
 import PrivateMemories from "./PrivateMemories";
+import { getGroupDetails } from "../api/groupApi"; // Import the API function
 import {
   GroupDetailContainer,
   FilterContainer,
@@ -16,19 +16,27 @@ const GroupDetail = ({
   onGroupDelete,
   onGroupUpdate,
   addMemoryToGroup,
-  updateMemoryInGroup, // App.js에서 전달된 updateMemoryInGroup 함수
+  updateMemoryInGroup,
 }) => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const group = groups.find((group) => group.id === parseInt(id));
+  const [group, setGroup] = useState(null); // Hold group data
   const [isPublicMemory, setIsPublicMemory] = useState(true);
   const [memories, setMemories] = useState([]);
 
   useEffect(() => {
-    if (group) {
-      setMemories(group.memories || []);
-    }
-  }, [group]);
+    const fetchGroupDetails = async () => {
+      try {
+        const groupData = await getGroupDetails(id); // Fetch group details by ID
+        setGroup(groupData);
+        setMemories(groupData.memories || []); // Set memories for the group
+      } catch (error) {
+        console.error("Error fetching group details:", error);
+      }
+    };
+
+    fetchGroupDetails();
+  }, [id]);
 
   const handleUploadMemory = () => {
     navigate(`/memory-upload/${group.id}`);
@@ -41,13 +49,6 @@ const GroupDetail = ({
   const handlePrivateMemories = () => {
     setIsPublicMemory(false);
   };
-
-  // 메모리가 업데이트될 때마다 그룹의 메모리 상태를 동기화
-  useEffect(() => {
-    if (group) {
-      setMemories(group.memories || []);
-    }
-  }, [group]);
 
   if (!group) {
     return <p>그룹을 찾을 수 없습니다.</p>;
