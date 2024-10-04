@@ -1,3 +1,4 @@
+// api.js
 import axios from "axios";
 
 // JWT 토큰을 가져오는 함수

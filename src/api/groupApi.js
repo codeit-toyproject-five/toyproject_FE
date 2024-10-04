@@ -1,9 +1,10 @@
+// groupService.js
 import api from "./api";
 
 // 그룹 생성
 export const createGroup = async (groupData) => {
   try {
-    const response = await api.post("/groups", groupData);
+    const response = await api.post("/groups", groupData); // 일반 JSON 형식으로 전송
     return response.data;
   } catch (error) {
     throw error.response ? error.response.data : new Error("Server error");
@@ -19,12 +20,7 @@ export const getGroups = async (
 ) => {
   try {
     const response = await api.get("/groups", {
-      params: {
-        page,
-        pageSize,
-        keyword,
-        isPublic,
-      },
+      params: { page, pageSize, keyword, isPublic },
     });
     return response.data;
   } catch (error) {
@@ -32,12 +28,10 @@ export const getGroups = async (
   }
 };
 
-// 그룹 삭제
-export const deleteGroup = async (groupId, password) => {
+// 그룹 세부 정보 가져오기
+export const getGroupDetails = async (groupId) => {
   try {
-    const response = await api.delete(`/groups/${groupId}`, {
-      data: { password },
-    });
+    const response = await api.get(`/groups/${groupId}`);
     return response.data;
   } catch (error) {
     throw error.response ? error.response.data : new Error("Server error");
@@ -54,10 +48,12 @@ export const updateGroup = async (groupId, groupData) => {
   }
 };
 
-// 그룹 세부 정보 가져오기
-export const getGroupDetails = async (groupId) => {
+// 그룹 삭제
+export const deleteGroup = async (groupId, password) => {
   try {
-    const response = await api.get(`/groups/${groupId}`);
+    const response = await api.delete(`/groups/${groupId}`, {
+      data: { password },
+    });
     return response.data;
   } catch (error) {
     throw error.response ? error.response.data : new Error("Server error");

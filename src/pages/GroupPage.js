@@ -32,22 +32,13 @@ const GroupPage = () => {
     navigate(`/group/${groupId}`);
   };
 
-  const handleGroupUpdate = (updatedGroup) => {
-    // 공감 후 목록을 업데이트
-    setGroups((prevGroups) =>
-      prevGroups.map((group) =>
-        group.id === updatedGroup.id ? updatedGroup : group
-      )
-    );
-  };
-
   return (
     <GroupListContainer>
       {groups.length > 0 ? (
         groups.map((group) => (
           <GroupCard key={group.id} onClick={() => handleGroupClick(group.id)}>
             {group.imageUrl && (
-              <GroupCardImage src={group.imageUrl} alt={group.name} />
+              <GroupCardImage src={group.imageUrl} alt={group.name} /> // 이미지 표시
             )}
             <GroupCardContent>
               <GroupCardTitle>{group.name}</GroupCardTitle>

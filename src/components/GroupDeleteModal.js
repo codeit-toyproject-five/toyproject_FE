@@ -19,6 +19,10 @@ const GroupDeleteModal = ({ group, onClose, onDelete }) => {
     try {
       // 서버에 그룹 삭제 요청
       await deleteGroup(group.id, password);
+
+      // 삭제된 그룹 ID를 콘솔에 출력
+      console.log("Deleted group ID:", group.id);
+
       onDelete(group.id); // 상위 컴포넌트에 삭제된 그룹 ID 전달
       onClose(); // 모달 닫기
 

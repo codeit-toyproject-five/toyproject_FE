@@ -1,4 +1,3 @@
-// src/pages/CreateGroup.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createGroup } from "../api/groupApi"; // 그룹 생성 API 함수 import
@@ -15,7 +14,7 @@ import {
 
 const CreateGroup = () => {
   const [groupName, setGroupName] = useState("");
-  const [groupImage, setGroupImage] = useState(null);
+  const [groupImage, setGroupImage] = useState(""); // 파일 이름만 저장
   const [groupDescription, setGroupDescription] = useState("");
   const [isPublic, setIsPublic] = useState(true);
   const [password, setPassword] = useState("");
@@ -29,16 +28,21 @@ const CreateGroup = () => {
       return;
     }
 
+    // 이미지 파일이 없을 경우 null로 설정
+    const imageUrl = groupImage ? URL.createObjectURL(groupImage) : null;
+
     const newGroup = {
       name: groupName,
       password,
-      imageUrl: groupImage ? URL.createObjectURL(groupImage) : null,
+      imageUrl, // 이미지의 URL 대신 파일 이름만 전송
       isPublic,
       introduction: groupDescription,
     };
 
     try {
-      await createGroup(newGroup); // 그룹 생성 API 호출
+      const response = await createGroup(newGroup); // 그룹 생성 API 호출
+      console.log("생성된 그룹 ID:", response.id); // 생성된 그룹 ID를 콘솔에 출력
+      console.log("생성된 그룹 이미지 URL:", response.imageUrl); // 이미지 URL도 확인 가능
       navigate("/"); // 생성 후 홈으로 이동
     } catch (error) {
       console.error("그룹 생성 실패:", error);
