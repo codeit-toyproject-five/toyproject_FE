@@ -8,6 +8,7 @@ export const CreateGroupContainer = styled.div`
   padding: 20px;
   min-height: 100vh; /* 페이지 전체를 채우도록 설정 */
   background-color: #f8f9fa; /* 배경색 설정 */
+  position: relative; /* 닫기 버튼의 위치를 설정하기 위해 필요 */
 `;
 
 export const Form = styled.form`
@@ -57,4 +58,20 @@ export const SubmitButton = styled.button`
   cursor: pointer;
   font-size: 16px;
   text-align: center;
+`;
+
+// 추가된 닫기 버튼 스타일
+export const CloseButton = styled.button`
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #333;
+  cursor: pointer;
+
+  &:hover {
+    color: #000;
+  }
 `;

@@ -9,6 +9,7 @@ import {
   TextArea,
   ToggleSwitch,
   SubmitButton,
+  CloseButton, // 추가된 CloseButton import
 } from "../styles/CreateGroupStyle";
 
 const CreateGroup = ({ addGroup }) => {
@@ -52,8 +53,13 @@ const CreateGroup = ({ addGroup }) => {
     }
   };
 
+  const handleClose = () => {
+    navigate(-1); // 닫기 버튼 클릭 시 이전 페이지로 이동
+  };
+
   return (
     <CreateGroupContainer>
+      <CloseButton onClick={handleClose}>✕</CloseButton> {/* 닫기 버튼 */}
       <h1>그룹 만들기</h1>
       <Form onSubmit={handleSubmit}>
         <Label>그룹명</Label>
