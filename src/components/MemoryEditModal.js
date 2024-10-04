@@ -22,6 +22,7 @@ const MemoryEditModal = ({ onClose, onSubmit, memory }) => {
   const [date, setDate] = useState(memory.date || "");
   const [isPublic, setIsPublic] = useState(memory.isPublic || true);
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (image) {
@@ -33,6 +34,12 @@ const MemoryEditModal = ({ onClose, onSubmit, memory }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // 비밀번호가 일치하는지 확인
+    if (password !== memory.password) {
+      setError("비밀번호가 일치하지 않습니다.");
+      return;
+    }
 
     const updatedMemory = {
       nickname,
@@ -57,86 +64,94 @@ const MemoryEditModal = ({ onClose, onSubmit, memory }) => {
         <h2>추억 수정</h2>
         <CloseButton onClick={onClose}>×</CloseButton>
 
-        <InputField
-          type="text"
-          value={nickname}
-          onChange={(e) => setNickname(e.target.value)}
-          placeholder="닉네임을 입력해 주세요"
-          required
-        />
-
-        <InputField
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="제목을 입력해 주세요"
-          required
-        />
-
-        {imagePreview && (
-          <img
-            src={imagePreview}
-            alt="미리보기"
-            style={{ width: "100%", marginBottom: "15px", borderRadius: "8px" }}
+        <form onSubmit={handleSubmit}>
+          <InputField
+            type="text"
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+            placeholder="닉네임을 입력해 주세요"
+            required
           />
-        )}
-        <InputField
-          type="file"
-          onChange={(e) => setImage(e.target.files[0])}
-          placeholder="파일을 선택해 주세요"
-        />
 
-        <TextArea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="본문 내용을 입력해 주세요"
-          required
-        />
+          <InputField
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="제목을 입력해 주세요"
+            required
+          />
 
-        <InputField
-          type="text"
-          value={tags}
-          onChange={(e) => setTags(e.target.value)}
-          placeholder="태그를 입력해 주세요"
-        />
-
-        <InputField
-          type="text"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          placeholder="장소를 입력해 주세요"
-        />
-
-        <InputField
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-        />
-
-        <div>
-          <label>추억 공개 선택</label>
-          <ToggleSwitchStyled>
-            <input
-              type="checkbox"
-              checked={isPublic}
-              onChange={() => setIsPublic(!isPublic)}
+          {imagePreview && (
+            <img
+              src={imagePreview}
+              alt="미리보기"
+              style={{
+                width: "100%",
+                marginBottom: "15px",
+                borderRadius: "8px",
+              }}
             />
-            <span className="slider round"></span>
-          </ToggleSwitchStyled>
-          <PublicStatusText isPublic={isPublic}>
-            {isPublic ? "공개" : "비공개"}
-          </PublicStatusText>
-        </div>
+          )}
+          <InputField
+            type="file"
+            onChange={(e) => setImage(e.target.files[0])}
+            placeholder="파일을 선택해 주세요"
+          />
 
-        <InputField
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="그룹 비밀번호를 입력해 주세요"
-          required
-        />
+          <TextArea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="본문 내용을 입력해 주세요"
+            required
+          />
 
-        <SubmitButton onClick={handleSubmit}>수정하기</SubmitButton>
+          <InputField
+            type="text"
+            value={tags}
+            onChange={(e) => setTags(e.target.value)}
+            placeholder="태그를 입력해 주세요"
+          />
+
+          <InputField
+            type="text"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder="장소를 입력해 주세요"
+          />
+
+          <InputField
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+
+          <div>
+            <label>추억 공개 선택</label>
+            <ToggleSwitchStyled>
+              <input
+                type="checkbox"
+                checked={isPublic}
+                onChange={() => setIsPublic(!isPublic)}
+              />
+              <span className="slider round"></span>
+            </ToggleSwitchStyled>
+            <PublicStatusText isPublic={isPublic}>
+              {isPublic ? "공개" : "비공개"}
+            </PublicStatusText>
+          </div>
+
+          <InputField
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="추억 비밀번호를 입력해 주세요"
+            required
+          />
+
+          {error && <p style={{ color: "red" }}>{error}</p>}
+
+          <SubmitButton type="submit">수정하기</SubmitButton>
+        </form>
       </ModalContent>
     </ModalContainer>
   );

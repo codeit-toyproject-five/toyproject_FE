@@ -1,4 +1,3 @@
-// src/pages/MemoryDetailPage.js
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
@@ -43,7 +42,6 @@ const MemoryDetailPage = ({ groups, updateMemoryInGroup }) => {
   const commentsPerPage = 3;
 
   useEffect(() => {
-    // 모든 그룹에서 해당 메모리를 찾기
     const foundMemory = groups
       .flatMap((group) => group.memories || [])
       .find((mem) => mem.id === parseInt(memoryId));
@@ -55,7 +53,6 @@ const MemoryDetailPage = ({ groups, updateMemoryInGroup }) => {
     }
 
     if (!foundMemory.isPublic && !location.state?.authenticated) {
-      // 비공개 추억인데 인증되지 않았다면 접근 제한
       navigate(`/private-group/${foundMemory.groupId}/private-memory-access`, {
         state: { memory: foundMemory },
       });
@@ -106,7 +103,6 @@ const MemoryDetailPage = ({ groups, updateMemoryInGroup }) => {
   };
 
   const handleMemoryEditSubmit = (updatedMemory) => {
-    // 기존 메모리의 그룹 ID를 찾기
     const group = groups.find((g) =>
       g.memories?.some((mem) => mem.id === memory.id)
     );
@@ -116,23 +112,18 @@ const MemoryDetailPage = ({ groups, updateMemoryInGroup }) => {
       return;
     }
 
-    // 메모리 업데이트 함수 호출
     updateMemoryInGroup(group.id, { ...memory, ...updatedMemory });
 
-    // 상태 업데이트
     setMemory({ ...memory, ...updatedMemory });
 
     alert("추억이 성공적으로 수정되었습니다.");
     setMemoryEditModalOpen(false);
 
-    // 그룹 상세 페이지로 이동
     navigate(`/group/${group.id}`);
   };
 
   const handleMemoryDelete = (password) => {
-    // 비밀번호 확인 후 삭제 로직
     if (password === memory.password) {
-      // 그룹에서 메모리 삭제
       const group = groups.find((g) =>
         g.memories?.some((mem) => mem.id === memory.id)
       );
@@ -147,16 +138,13 @@ const MemoryDetailPage = ({ groups, updateMemoryInGroup }) => {
         memories: group.memories.filter((mem) => mem.id !== memory.id),
       };
 
-      updateMemoryInGroup(group.id, updatedGroup); // 그룹 업데이트
+      // 그룹 상태 업데이트 후 이동
+      updateMemoryInGroup(group.id, updatedGroup);
 
-      alert("추억이 성공적으로 삭제되었습니다.");
-
-      // 삭제 후 공개/비공개에 따라 적절한 페이지로 이동
-      if (memory.isPublic) {
-        navigate("/"); // 공개 추억 삭제 후 공개 추억 목록 페이지로 이동
-      } else {
-        navigate("/private-group/" + group.id); // 비공개 추억 삭제 후 해당 그룹의 비공개 추억 목록으로 이동
-      }
+      setTimeout(() => {
+        alert("추억이 성공적으로 삭제되었습니다.");
+        navigate(`/group/${group.id}`);
+      }, 0);
     } else {
       alert("비밀번호가 일치하지 않습니다.");
     }
@@ -221,13 +209,13 @@ const MemoryDetailPage = ({ groups, updateMemoryInGroup }) => {
               <EditIcon
                 onClick={() => {
                   setCurrentComment(comment);
-                  setEditModalOpen(true); // 모달을 여는 동작 추가
+                  setEditModalOpen(true);
                 }}
               />
               <DeleteIcon
                 onClick={() => {
                   setCurrentComment(comment);
-                  setDeleteModalOpen(true); // 모달을 여는 동작 추가
+                  setDeleteModalOpen(true);
                 }}
               />
             </div>
@@ -280,7 +268,7 @@ const MemoryDetailPage = ({ groups, updateMemoryInGroup }) => {
         <MemoryDeleteModal
           onClose={() => setMemoryDeleteModalOpen(false)}
           onDelete={handleMemoryDelete}
-          memory={memory} // 추가된 메모리 정보 전달
+          memory={memory}
         />
       )}
     </MemoryDetailContainer>

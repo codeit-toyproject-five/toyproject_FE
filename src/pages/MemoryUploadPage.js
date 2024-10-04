@@ -28,7 +28,7 @@ const MemoryUploadPage = ({ groups, addMemoryToGroup }) => {
     location: "",
     date: "",
     isPublic: true,
-    password: "", // 추억 비밀번호 (비공개 추억에만 사용)
+    password: "", // 추억 비밀번호 (항상 필요)
   });
 
   const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
@@ -53,7 +53,7 @@ const MemoryUploadPage = ({ groups, addMemoryToGroup }) => {
       !memoryData.content ||
       !memoryData.location ||
       !memoryData.date ||
-      (!memoryData.isPublic && !memoryData.password) // 비공개 추억일 경우 비밀번호 필수
+      !memoryData.password // 비밀번호는 항상 필수
     ) {
       alert("모든 필드를 입력해 주세요.");
       return;
@@ -79,7 +79,7 @@ const MemoryUploadPage = ({ groups, addMemoryToGroup }) => {
         location: memoryData.location,
         date: memoryData.date,
         isPublic: memoryData.isPublic,
-        password: memoryData.isPublic ? null : memoryData.password, // 비공개일 경우 추억 비밀번호 저장
+        password: memoryData.password, // 항상 비밀번호 저장
         likes: 0,
         views: 0,
       };
@@ -189,19 +189,18 @@ const MemoryUploadPage = ({ groups, addMemoryToGroup }) => {
             <span>{memoryData.isPublic ? "공개" : "비공개"}</span>
           </ToggleContainer>
         </FormGroup>
-        {!memoryData.isPublic && (
-          <FormGroup>
-            <Label>추억 비밀번호</Label>
-            <PasswordInput
-              type="password"
-              name="password"
-              placeholder="비밀번호를 입력해 주세요"
-              value={memoryData.password}
-              onChange={handleInputChange}
-              required={!memoryData.isPublic}
-            />
-          </FormGroup>
-        )}
+        {/* 비밀번호 입력 필드를 항상 표시 */}
+        <FormGroup>
+          <Label>추억 비밀번호</Label>
+          <PasswordInput
+            type="password"
+            name="password"
+            placeholder="비밀번호를 입력해 주세요"
+            value={memoryData.password}
+            onChange={handleInputChange}
+            required
+          />
+        </FormGroup>
         <SubmitButton type="submit">올리기</SubmitButton>
       </UploadForm>
       <CloseButton onClick={handleCloseModal}>×</CloseButton>
