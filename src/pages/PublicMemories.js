@@ -1,4 +1,6 @@
+// src/pages/PublicMemories.js
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   PublicMemoryListContainer,
   PublicMemoryCard,
@@ -8,11 +10,20 @@ import {
 } from "../styles/PublicMemoryStyle";
 
 const PublicMemories = ({ memories }) => {
+  const navigate = useNavigate();
+
+  const handleCardClick = (memory) => {
+    navigate(`/memory/${memory.id}`, { state: { memory } });
+  };
+
   return (
     <PublicMemoryListContainer>
       {memories && memories.length > 0 ? (
         memories.map((memory) => (
-          <PublicMemoryCard key={memory.id}>
+          <PublicMemoryCard
+            key={memory.id}
+            onClick={() => handleCardClick(memory)}
+          >
             {memory.imageUrl && (
               <MemoryImage src={memory.imageUrl} alt={memory.title} />
             )}

@@ -9,6 +9,7 @@ import GroupDetail from "./pages/GroupDetail";
 import MemoryUploadPage from "./pages/MemoryUploadPage";
 import PrivateMemoryAccessPage from "./pages/PrivateMemoryAccessPage";
 import PrivateGroupAccessPage from "./pages/PrivateGroupAccessPage";
+import MemoryDetailPage from "./pages/MemoryDetailPage"; // 추가된 MemoryDetailPage
 import GlobalStyle from "./styles/GlobalStyle";
 
 function App() {
@@ -87,7 +88,7 @@ function App() {
               groups={groups}
               onGroupDelete={deleteGroup}
               onGroupUpdate={updateGroup}
-              addMemoryToGroup={addMemoryToGroup} // 추가된 props
+              addMemoryToGroup={addMemoryToGroup}
             />
           }
         />
@@ -100,6 +101,8 @@ function App() {
             />
           }
         />
+        {/* 새로 추가된 추억 상세 페이지 라우트 */}
+        <Route path="/memory/:memoryId" element={<MemoryDetailPage />} />
       </Routes>
     </Router>
   );
