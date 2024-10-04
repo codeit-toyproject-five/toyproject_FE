@@ -132,7 +132,7 @@ const MemoryEditModal = ({ onClose, onSubmit, memory }) => {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="수정 비밀번호를 입력해 주세요"
+          placeholder="그룹 비밀번호를 입력해 주세요"
           required
         />
 

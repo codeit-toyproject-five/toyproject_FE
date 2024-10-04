@@ -150,7 +150,13 @@ const MemoryDetailPage = ({ groups, updateMemoryInGroup }) => {
       updateMemoryInGroup(group.id, updatedGroup); // 그룹 업데이트
 
       alert("추억이 성공적으로 삭제되었습니다.");
-      navigate("/"); // 추억 삭제 후 메인 페이지로 이동
+
+      // 삭제 후 공개/비공개에 따라 적절한 페이지로 이동
+      if (memory.isPublic) {
+        navigate("/"); // 공개 추억 삭제 후 공개 추억 목록 페이지로 이동
+      } else {
+        navigate("/private-group/" + group.id); // 비공개 추억 삭제 후 해당 그룹의 비공개 추억 목록으로 이동
+      }
     } else {
       alert("비밀번호가 일치하지 않습니다.");
     }
@@ -274,6 +280,7 @@ const MemoryDetailPage = ({ groups, updateMemoryInGroup }) => {
         <MemoryDeleteModal
           onClose={() => setMemoryDeleteModalOpen(false)}
           onDelete={handleMemoryDelete}
+          memory={memory} // 추가된 메모리 정보 전달
         />
       )}
     </MemoryDetailContainer>
