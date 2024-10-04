@@ -1,6 +1,6 @@
 // src/pages/PrivateMemoryAccessPage.js
-import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   PasswordAccessContainer,
   PasswordInput,
@@ -11,10 +11,27 @@ const PrivateMemoryAccessPage = ({ groups }) => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
-  // const { id } = useParams(); // 사용되지 않는 변수 제거
+  const { memoryId } = useParams(); // memoryId로 변경
 
-  // 전달된 메모리 데이터
-  const memory = location.state?.memory;
+  const [memory, setMemory] = useState(null);
+
+  useEffect(() => {
+    if (location.state?.memory) {
+      setMemory(location.state.memory);
+    } else {
+      // 모든 그룹에서 해당 메모리를 찾기
+      const foundMemory = groups
+        .flatMap((group) => group.memories || [])
+        .find((mem) => mem.id === parseInt(memoryId));
+
+      if (foundMemory) {
+        setMemory(foundMemory);
+      } else {
+        alert("추억을 찾을 수 없습니다.");
+        navigate(-1);
+      }
+    }
+  }, [location.state, groups, memoryId, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -42,6 +59,7 @@ const PrivateMemoryAccessPage = ({ groups }) => {
           placeholder="추억 비밀번호를 입력하세요"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
         />
         <SubmitButton type="submit">제출하기</SubmitButton>
       </form>

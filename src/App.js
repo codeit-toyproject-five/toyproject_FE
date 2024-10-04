@@ -43,6 +43,22 @@ function App() {
     );
   };
 
+  // 그룹 내 추억 업데이트 함수
+  const updateMemoryInGroup = (groupId, updatedMemory) => {
+    setGroups(
+      groups.map((group) =>
+        group.id === groupId
+          ? {
+              ...group,
+              memories: group.memories.map((memory) =>
+                memory.id === updatedMemory.id ? updatedMemory : memory
+              ),
+            }
+          : group
+      )
+    );
+  };
+
   return (
     <Router>
       <GlobalStyle />
@@ -89,6 +105,7 @@ function App() {
               onGroupDelete={deleteGroup}
               onGroupUpdate={updateGroup}
               addMemoryToGroup={addMemoryToGroup}
+              updateMemoryInGroup={updateMemoryInGroup} // 추가된 부분
             />
           }
         />
@@ -104,7 +121,12 @@ function App() {
         {/* 새로 추가된 추억 상세 페이지 라우트 */}
         <Route
           path="/memory/:memoryId"
-          element={<MemoryDetailPage groups={groups} />}
+          element={
+            <MemoryDetailPage
+              groups={groups}
+              updateMemoryInGroup={updateMemoryInGroup}
+            />
+          }
         />
       </Routes>
     </Router>

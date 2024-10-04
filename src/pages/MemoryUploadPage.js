@@ -117,6 +117,7 @@ const MemoryUploadPage = ({ groups, addMemoryToGroup }) => {
             placeholder="닉네임을 입력해 주세요"
             value={memoryData.nickname}
             onChange={handleInputChange}
+            required
           />
         </FormGroup>
         <FormGroup>
@@ -127,6 +128,7 @@ const MemoryUploadPage = ({ groups, addMemoryToGroup }) => {
             placeholder="제목을 입력해 주세요"
             value={memoryData.title}
             onChange={handleInputChange}
+            required
           />
         </FormGroup>
         <FormGroup>
@@ -140,6 +142,7 @@ const MemoryUploadPage = ({ groups, addMemoryToGroup }) => {
             placeholder="본문 내용을 입력해 주세요"
             value={memoryData.content}
             onChange={handleInputChange}
+            required
           />
         </FormGroup>
         <FormGroup>
@@ -194,6 +197,7 @@ const MemoryUploadPage = ({ groups, addMemoryToGroup }) => {
             placeholder="비밀번호를 입력해 주세요"
             value={memoryData.password}
             onChange={handleInputChange}
+            required
           />
         </FormGroup>
         <SubmitButton type="submit">올리기</SubmitButton>

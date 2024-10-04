@@ -1,3 +1,4 @@
+// src/components/MemoryEditModal.js
 import React, { useState, useEffect } from "react";
 import {
   ModalContainer,
@@ -36,14 +37,14 @@ const MemoryEditModal = ({ onClose, onSubmit, memory }) => {
     const updatedMemory = {
       nickname,
       title,
-      image: image || memory.imageUrl,
-      imageUrl: image ? URL.createObjectURL(image) : memory.imageUrl,
+      image: image || null, // File 객체 또는 null로 설정
+      imageUrl: image ? URL.createObjectURL(image) : memory.imageUrl, // File 객체일 때만 URL 생성
       content,
       tags,
       location,
       date,
       isPublic,
-      password,
+      password: password || memory.password, // 기존 비밀번호 유지
     };
 
     onSubmit(updatedMemory);
@@ -61,6 +62,7 @@ const MemoryEditModal = ({ onClose, onSubmit, memory }) => {
           value={nickname}
           onChange={(e) => setNickname(e.target.value)}
           placeholder="닉네임을 입력해 주세요"
+          required
         />
 
         <InputField
@@ -68,6 +70,7 @@ const MemoryEditModal = ({ onClose, onSubmit, memory }) => {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="제목을 입력해 주세요"
+          required
         />
 
         {imagePreview && (
@@ -87,6 +90,7 @@ const MemoryEditModal = ({ onClose, onSubmit, memory }) => {
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="본문 내용을 입력해 주세요"
+          required
         />
 
         <InputField
@@ -129,6 +133,7 @@ const MemoryEditModal = ({ onClose, onSubmit, memory }) => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="수정 비밀번호를 입력해 주세요"
+          required
         />
 
         <SubmitButton onClick={handleSubmit}>수정하기</SubmitButton>

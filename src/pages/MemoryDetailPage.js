@@ -24,10 +24,10 @@ import {
 import CommentModal from "../components/CommentModal";
 import EditCommentModal from "../components/EditCommentModal";
 import DeleteCommentModal from "../components/DeleteCommentModal";
-import MemoryEditModal from "../components/MemoryEditModal.js";
-import MemoryDeleteModal from "../components/MemoryDeleteModal.js";
+import MemoryEditModal from "../components/MemoryEditModal";
+import MemoryDeleteModal from "../components/MemoryDeleteModal";
 
-const MemoryDetailPage = ({ groups }) => {
+const MemoryDetailPage = ({ groups, updateMemoryInGroup }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { memoryId } = useParams();
@@ -106,15 +106,49 @@ const MemoryDetailPage = ({ groups }) => {
   };
 
   const handleMemoryEditSubmit = (updatedMemory) => {
-    // Memory 수정 로직
-    setMemory(updatedMemory); // 상태 업데이트
+    // 기존 메모리의 그룹 ID를 찾기
+    const group = groups.find((g) =>
+      g.memories?.some((mem) => mem.id === memory.id)
+    );
+
+    if (!group) {
+      alert("그룹을 찾을 수 없습니다.");
+      return;
+    }
+
+    // 메모리 업데이트 함수 호출
+    updateMemoryInGroup(group.id, { ...memory, ...updatedMemory });
+
+    // 상태 업데이트
+    setMemory({ ...memory, ...updatedMemory });
+
     alert("추억이 성공적으로 수정되었습니다.");
     setMemoryEditModalOpen(false);
+
+    // 그룹 상세 페이지로 이동
+    navigate(`/group/${group.id}`);
   };
 
   const handleMemoryDelete = (password) => {
     // 비밀번호 확인 후 삭제 로직
     if (password === memory.password) {
+      // 그룹에서 메모리 삭제
+      const group = groups.find((g) =>
+        g.memories?.some((mem) => mem.id === memory.id)
+      );
+
+      if (!group) {
+        alert("그룹을 찾을 수 없습니다.");
+        return;
+      }
+
+      const updatedGroup = {
+        ...group,
+        memories: group.memories.filter((mem) => mem.id !== memory.id),
+      };
+
+      updateMemoryInGroup(group.id, updatedGroup); // 그룹 업데이트
+
       alert("추억이 성공적으로 삭제되었습니다.");
       navigate("/"); // 추억 삭제 후 메인 페이지로 이동
     } else {
@@ -157,7 +191,7 @@ const MemoryDetailPage = ({ groups }) => {
         </InteractionInfo>
         <Button>공감 보내기</Button>
       </Info>
-      <Image src={memory.imageUrl} alt={memory.title} />
+      {memory.imageUrl && <Image src={memory.imageUrl} alt={memory.title} />}
       <Content>{memory.content}</Content>
       <div>
         {memory.tags &&
