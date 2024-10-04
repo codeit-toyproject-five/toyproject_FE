@@ -9,7 +9,7 @@ import GroupDetail from "./pages/GroupDetail";
 import MemoryUploadPage from "./pages/MemoryUploadPage";
 import PrivateMemoryAccessPage from "./pages/PrivateMemoryAccessPage";
 import PrivateGroupAccessPage from "./pages/PrivateGroupAccessPage";
-import MemoryDetailPage from "./pages/MemoryDetailPage"; // 추가된 MemoryDetailPage
+import MemoryDetailPage from "./pages/MemoryDetailPage";
 import GlobalStyle from "./styles/GlobalStyle";
 
 function App() {
@@ -37,7 +37,7 @@ function App() {
     setGroups(
       groups.map((group) =>
         group.id === groupId
-          ? { ...group, memories: [...group.memories, newMemory] }
+          ? { ...group, memories: [...(group.memories || []), newMemory] }
           : group
       )
     );
@@ -102,7 +102,10 @@ function App() {
           }
         />
         {/* 새로 추가된 추억 상세 페이지 라우트 */}
-        <Route path="/memory/:memoryId" element={<MemoryDetailPage />} />
+        <Route
+          path="/memory/:memoryId"
+          element={<MemoryDetailPage groups={groups} />}
+        />
       </Routes>
     </Router>
   );

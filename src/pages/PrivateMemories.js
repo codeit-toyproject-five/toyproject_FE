@@ -11,7 +11,10 @@ const PrivateMemories = ({ memories }) => {
   const navigate = useNavigate();
 
   const handleCardClick = (memory) => {
-    navigate(`/memory/${memory.id}`, { state: { memory } });
+    // 비공개 추억 접근 시 비밀번호 입력 페이지로 이동
+    navigate(`/private-group/${memory.groupId}/private-memory-access`, {
+      state: { memory },
+    });
   };
 
   return (

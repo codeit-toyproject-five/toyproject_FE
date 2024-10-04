@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+// src/pages/MemoryDetailPage.js
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   MemoryDetailContainer,
   Title,
@@ -26,13 +27,11 @@ import DeleteCommentModal from "../components/DeleteCommentModal";
 import MemoryEditModal from "../components/MemoryEditModal.js";
 import MemoryDeleteModal from "../components/MemoryDeleteModal.js";
 
-const MemoryDetailPage = () => {
+const MemoryDetailPage = ({ groups }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const initialMemory = location.state.memory; // 최초 전달된 메모리 데이터
-
-  // 메모리 상태를 유지하기 위한 state
-  const [memory, setMemory] = useState(initialMemory);
+  const { memoryId } = useParams();
+  const [memory, setMemory] = useState(null);
   const [comments, setComments] = useState([]);
   const [isCommentModalOpen, setCommentModalOpen] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
@@ -42,6 +41,33 @@ const MemoryDetailPage = () => {
   const [currentComment, setCurrentComment] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const commentsPerPage = 3;
+
+  useEffect(() => {
+    // 모든 그룹에서 해당 메모리를 찾기
+    const foundMemory = groups
+      .flatMap((group) => group.memories || [])
+      .find((mem) => mem.id === parseInt(memoryId));
+
+    if (!foundMemory) {
+      alert("추억을 찾을 수 없습니다.");
+      navigate(-1);
+      return;
+    }
+
+    if (!foundMemory.isPublic && !location.state?.authenticated) {
+      // 비공개 추억인데 인증되지 않았다면 접근 제한
+      navigate(`/private-group/${foundMemory.groupId}/private-memory-access`, {
+        state: { memory: foundMemory },
+      });
+      return;
+    }
+
+    setMemory(foundMemory);
+  }, [location, navigate, memoryId, groups]);
+
+  if (!memory) {
+    return <p>로딩 중...</p>;
+  }
 
   const handleCommentSubmit = (newComment) => {
     setComments([

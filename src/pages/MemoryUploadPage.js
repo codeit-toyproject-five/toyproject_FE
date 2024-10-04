@@ -32,7 +32,6 @@ const MemoryUploadPage = ({ groups, addMemoryToGroup }) => {
   });
 
   const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
-  // Removed the groupPassword state
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -66,11 +65,11 @@ const MemoryUploadPage = ({ groups, addMemoryToGroup }) => {
 
   const handleModalSubmit = (password) => {
     if (password === group.password) {
-      // Removed setGroupPassword(password);
       setPasswordModalOpen(false);
 
       const newMemory = {
         id: Date.now(),
+        groupId: group.id, // 그룹 ID 추가
         nickname: memoryData.nickname,
         title: memoryData.title,
         imageUrl: memoryData.image ? URL.createObjectURL(memoryData.image) : "",
@@ -88,7 +87,7 @@ const MemoryUploadPage = ({ groups, addMemoryToGroup }) => {
 
       alert("추억이 성공적으로 생성되었습니다.");
 
-      navigate(`/group/${group.id}`); // Corrected navigate syntax
+      navigate(`/group/${group.id}`); // 그룹 상세 페이지로 이동
     } else {
       alert("그룹 비밀번호가 일치하지 않습니다.");
     }

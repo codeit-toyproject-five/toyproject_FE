@@ -1,5 +1,6 @@
+// src/pages/PrivateMemoryAccessPage.js
 import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   PasswordAccessContainer,
   PasswordInput,
@@ -9,21 +10,23 @@ import {
 const PrivateMemoryAccessPage = ({ groups }) => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const { id } = useParams(); // URL에서 그룹 ID를 가져옴
+  const location = useLocation();
+  // const { id } = useParams(); // 사용되지 않는 변수 제거
 
-  const group = groups.find((group) => group.id === parseInt(id)); // 그룹 ID에 맞는 그룹 찾기
+  // 전달된 메모리 데이터
+  const memory = location.state?.memory;
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!group) {
-      alert("그룹을 찾을 수 없습니다.");
+    if (!memory) {
+      alert("추억을 찾을 수 없습니다.");
       return;
     }
 
-    if (password === group.password) {
-      // 비밀번호가 맞으면 그룹 상세 페이지로 이동
-      navigate(`/group/${id}`);
+    if (password === memory.password) {
+      // 비밀번호가 맞으면 추억 상세 페이지로 이동
+      navigate(`/memory/${memory.id}`, { state: { authenticated: true } });
     } else {
       alert("비밀번호가 틀렸습니다.");
     }
@@ -31,12 +34,12 @@ const PrivateMemoryAccessPage = ({ groups }) => {
 
   return (
     <PasswordAccessContainer>
-      <h2>{group?.groupName}에 접근</h2>
-      <p>비공개 그룹에 접근하기 위해 비밀번호를 입력하세요.</p>
+      <h2>{memory?.title}에 접근</h2>
+      <p>비공개 추억에 접근하기 위해 비밀번호를 입력하세요.</p>
       <form onSubmit={handleSubmit}>
         <PasswordInput
           type="password"
-          placeholder="그룹 비밀번호를 입력하세요"
+          placeholder="추억 비밀번호를 입력하세요"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
