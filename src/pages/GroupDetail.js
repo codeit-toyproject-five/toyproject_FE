@@ -1,8 +1,9 @@
+// src/pages/GroupDetail.js
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import GroupDetailHeader from "../components/GroupDetailHeader";
-import PublicMemories from "./PublicMemories";
-import PrivateMemories from "./PrivateMemories";
+import PublicMemories from "../components/PublicMemories"; // 수정된 임포트 경로
+import PrivateMemories from "../components/PrivateMemories"; // 수정된 임포트 경로
 import { getGroupDetails } from "../api/groupApi"; // Import the API function
 import {
   GroupDetailContainer,
@@ -18,7 +19,7 @@ const GroupDetail = ({
   addMemoryToGroup,
   updateMemoryInGroup,
 }) => {
-  const { id } = useParams();
+  const { groupId } = useParams(); // 'id'에서 'groupId'로 변경 (라우트 파라미터와 일치)
   const navigate = useNavigate();
   const [group, setGroup] = useState(null); // Hold group data
   const [isPublicMemory, setIsPublicMemory] = useState(true);
@@ -27,7 +28,7 @@ const GroupDetail = ({
   useEffect(() => {
     const fetchGroupDetails = async () => {
       try {
-        const groupData = await getGroupDetails(id); // Fetch group details by ID
+        const groupData = await getGroupDetails(groupId); // Fetch group details by ID
         setGroup(groupData);
         setMemories(groupData.memories || []); // Set memories for the group
       } catch (error) {
@@ -36,7 +37,7 @@ const GroupDetail = ({
     };
 
     fetchGroupDetails();
-  }, [id]);
+  }, [groupId]);
 
   const handleUploadMemory = () => {
     navigate(`/memory-upload/${group.id}`);

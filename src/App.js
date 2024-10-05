@@ -94,11 +94,11 @@ function App() {
           element={<CreateGroup addGroup={addGroup} />}
         />
         <Route
-          path="/private-group/:id/private-memory-access"
+          path="/private-group/:groupId/private-memory-access"
           element={<PrivateMemoryAccessPage groups={groups} />}
         />
         <Route
-          path="/group/:id"
+          path="/group/:groupId"
           element={
             <GroupDetail
               groups={groups}

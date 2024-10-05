@@ -1,18 +1,15 @@
+// src/api/postService.js
 import api from "./api";
 
 // 게시글 생성
 export const createPost = async (groupId, postData) => {
   try {
-    // JSON 데이터의 내용을 출력하여 전송하는 데이터를 확인
     console.log("JSON 바디 전송 내용:", postData);
-
-    // POST 요청을 보내면서 JSON 데이터를 전송 (axios가 Content-Type을 자동으로 설정)
     const response = await api.post(`/groups/${groupId}/posts`, postData, {
       headers: {
         "Content-Type": "application/json",
       },
     });
-
     return response.data;
   } catch (error) {
     console.error("Error creating post:", error.response || error);
@@ -27,12 +24,13 @@ export const getGroupPosts = async (
   pageSize = 10,
   sortBy = "latest",
   keyword = "",
-  isPublic = true
+  isPublic = true // boolean 타입 유지
 ) => {
   try {
     const response = await api.get(`/groups/${groupId}/posts`, {
       params: { page, pageSize, sortBy, keyword, isPublic },
     });
+    console.log("API Response:", response.data); // 응답 데이터 확인을 위한 로그
     return response.data;
   } catch (error) {
     console.error("Error fetching group posts:", error.response || error);
