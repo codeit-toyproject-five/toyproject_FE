@@ -25,40 +25,45 @@ const GroupUpdateModal = ({ group, onClose, onUpdate }) => {
 
   const handleUpdate = async () => {
     try {
+      console.log("Password before API call:", password);
+
+      if (!password) {
+        setError("비밀번호를 입력해 주세요.");
+        return;
+      }
+
       // 비밀번호 검증 API 호출
       const verifyResponse = await verifyGroupPassword(group.id, password);
-      console.log("Verify Response:", verifyResponse); // 응답 메시지 확인
+      console.log("Verify Response:", verifyResponse);
 
-      // 비밀번호 검증 성공 여부를 확인 (서버 응답에 따라 조정)
       if (verifyResponse.message && verifyResponse.message.includes("확인")) {
         console.log(
           "Password verification passed, proceeding with group update."
         );
 
-        const formData = new FormData();
-        formData.append("name", newGroupName);
-        formData.append("description", newGroupDescription);
-        formData.append("isPublic", isPublic.toString()); // isPublic을 문자열로 변환하여 전송
+        // 그룹 데이터를 JSON 형식으로 전송 (FormData 사용 안함)
+        const updateData = {
+          name: newGroupName,
+          description: newGroupDescription,
+          isPublic: isPublic,
+          imageUrl: newGroupImage || group.imageUrl, // 이미지 URL
+          introduction: newGroupDescription,
+          password: password, // 비밀번호 추가
+        };
 
-        // 이미지가 있을 경우에만 FormData에 추가
-        if (newGroupImage) {
-          formData.append("imageUrl", newGroupImage); // 파일 데이터 그대로 전송
-        }
+        console.log("Request Body:", updateData);
 
-        // 그룹 업데이트 API 호출 및 서버 응답 수신
-        const updateResponse = await updateGroup(group.id, formData);
-        console.log("Update Response:", updateResponse); // 서버 응답 확인
+        // 그룹 업데이트 API 호출
+        const updateResponse = await updateGroup(group.id, updateData);
+        console.log("Update Response:", updateResponse);
 
-        if (updateResponse && updateResponse.success) {
-          // 업데이트된 정보를 부모 컴포넌트에 전달
+        if (updateResponse && updateResponse.id) {
           onUpdate({
-            name: updateResponse.name, // 서버에서 반환된 새 이름
-            description: updateResponse.description, // 서버에서 반환된 새 설명
-            imageUrl: updateResponse.imageUrl || group.imageUrl, // 서버에서 반환된 이미지 URL, 없으면 기존 URL 유지
-            isPublic: updateResponse.isPublic, // 서버에서 반환된 공개 상태
+            name: updateResponse.name,
+            description: updateResponse.description,
+            imageUrl: updateResponse.imageUrl || group.imageUrl,
+            isPublic: updateResponse.isPublic,
           });
-
-          // 모달 닫기
           onClose();
         } else {
           setError("그룹 수정에 실패했습니다. 서버 응답을 확인하세요.");
@@ -67,8 +72,8 @@ const GroupUpdateModal = ({ group, onClose, onUpdate }) => {
         setError("비밀번호가 일치하지 않습니다.");
       }
     } catch (error) {
-      console.log("Update error:", error); // 에러 디버깅을 위해 추가
-      if (error.response && error.response.status === 401) {
+      console.log("Update error:", error);
+      if (error.response && error.response.status === 403) {
         setError("비밀번호가 일치하지 않습니다.");
       } else {
         setError("그룹 수정 중 오류가 발생했습니다.");

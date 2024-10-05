@@ -41,9 +41,15 @@ export const getGroupDetails = async (groupId) => {
 // 그룹 수정
 export const updateGroup = async (groupId, groupData) => {
   try {
-    const response = await api.patch(`/groups/${groupId}`, groupData);
+    // 그룹 데이터를 JSON 형식으로 전송
+    const response = await api.patch(`/groups/${groupId}`, groupData, {
+      headers: {
+        "Content-Type": "application/json", // JSON 형식으로 전송
+      },
+    });
     return response.data;
   } catch (error) {
+    console.error("Error updating group:", error); // 에러 로그 출력
     throw error.response ? error.response.data : new Error("Server error");
   }
 };
@@ -73,11 +79,25 @@ export const likeGroup = async (groupId) => {
 // 그룹 비밀번호 확인
 export const verifyGroupPassword = async (groupId, password) => {
   try {
+    // 비밀번호를 JSON 형식으로 서버에 전송
     const response = await api.post(`/groups/${groupId}/verify-password`, {
-      password,
+      password: password, // 요청 본문에 비밀번호 포함
     });
-    return response.data;
+
+    // 서버로부터 성공적인 응답을 받은 경우
+    console.log("Response from server:", response.data);
+
+    return response.data; // 서버에서 반환된 데이터
   } catch (error) {
-    throw error.response ? error.response.data : new Error("Server error");
+    console.error("Error during password verification:", error);
+
+    // 서버로부터 반환된 에러 메시지 처리
+    if (error.response) {
+      console.log("Error response status:", error.response.status);
+      console.log("Error response data:", error.response.data);
+      throw error.response.data; // 서버에서 받은 에러 데이터를 그대로 던짐
+    } else {
+      throw new Error("서버와의 통신 오류가 발생했습니다.");
+    }
   }
 };
