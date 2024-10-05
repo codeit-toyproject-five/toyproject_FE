@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createGroup } from "../api/groupApi"; // 그룹 생성 API 함수 import
+import { uploadImageToServer } from "../api/api"; // 이미지 업로드 함수 import
 import {
   CreateGroupContainer,
   Form,
@@ -14,10 +15,11 @@ import {
 
 const CreateGroup = () => {
   const [groupName, setGroupName] = useState("");
-  const [groupImage, setGroupImage] = useState(""); // 파일 이름만 저장
+  const [groupImage, setGroupImage] = useState(null); // 파일을 저장
   const [groupDescription, setGroupDescription] = useState("");
   const [isPublic, setIsPublic] = useState(true);
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false); // 로딩 상태 추가
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -28,25 +30,33 @@ const CreateGroup = () => {
       return;
     }
 
-    // 이미지 파일이 없을 경우 null로 설정
-    const imageUrl = groupImage ? URL.createObjectURL(groupImage) : null;
-
-    const newGroup = {
-      name: groupName,
-      password,
-      imageUrl, // 이미지의 URL 대신 파일 이름만 전송
-      isPublic,
-      introduction: groupDescription,
-    };
+    setLoading(true); // 로딩 시작
 
     try {
+      let imageUrl = null;
+
+      // 이미지 파일이 있을 경우 서버에 업로드
+      if (groupImage) {
+        imageUrl = await uploadImageToServer(groupImage); // 이미지 업로드 후 URL 반환
+      }
+
+      const newGroup = {
+        name: groupName,
+        password,
+        imageUrl, // 업로드된 이미지 URL
+        isPublic,
+        introduction: groupDescription,
+      };
+
       const response = await createGroup(newGroup); // 그룹 생성 API 호출
-      console.log("생성된 그룹 ID:", response.id); // 생성된 그룹 ID를 콘솔에 출력
-      console.log("생성된 그룹 이미지 URL:", response.imageUrl); // 이미지 URL도 확인 가능
+      console.log("생성된 그룹 ID:", response.id); // 생성된 그룹 ID 출력
+
+      setLoading(false); // 로딩 종료
       navigate("/"); // 생성 후 홈으로 이동
     } catch (error) {
       console.error("그룹 생성 실패:", error);
       alert("그룹 생성 중 오류가 발생했습니다.");
+      setLoading(false); // 로딩 종료
     }
   };
 
@@ -66,17 +76,18 @@ const CreateGroup = () => {
           onChange={(e) => setGroupName(e.target.value)}
           placeholder="그룹명을 입력하세요"
         />
-
         <Label>대표 이미지</Label>
-        <Input type="file" onChange={(e) => setGroupImage(e.target.files[0])} />
-
+        <Input
+          type="file"
+          onChange={(e) => setGroupImage(e.target.files[0])}
+        />{" "}
+        {/* 파일 선택 */}
         <Label>그룹 소개</Label>
         <TextArea
           value={groupDescription}
           onChange={(e) => setGroupDescription(e.target.value)}
           placeholder="그룹을 소개해 주세요"
         />
-
         <Label>그룹 공개 여부</Label>
         <ToggleSwitch>
           <input
@@ -87,7 +98,6 @@ const CreateGroup = () => {
           <span></span>
           <span>{isPublic ? "공개" : "비공개"}</span>
         </ToggleSwitch>
-
         <Label>비밀번호</Label>
         <Input
           type="password"
@@ -95,8 +105,9 @@ const CreateGroup = () => {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="비밀번호를 입력하세요"
         />
-
-        <SubmitButton type="submit">그룹 생성</SubmitButton>
+        <SubmitButton type="submit" disabled={loading}>
+          {loading ? "그룹 생성 중..." : "그룹 생성"}
+        </SubmitButton>
       </Form>
     </CreateGroupContainer>
   );

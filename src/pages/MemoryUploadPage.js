@@ -1,4 +1,3 @@
-// src/pages/MemoryUploadPage.js
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -14,94 +13,120 @@ import {
   ToggleSwitchStyled,
   PasswordInput,
 } from "../styles/MemoryUploadStyle";
-import PasswordModal from "../components/PasswordModal";
+import { createPost } from "../api/postService"; // postService에서 createPost 임포트
+import api from "../api/api"; // 이미지 업로드를 위한 API 인스턴스
 
 const MemoryUploadPage = ({ groups, addMemoryToGroup }) => {
   const { groupId } = useParams(); // URL에서 그룹 ID 가져오기
-  const group = groups.find((g) => g.id === parseInt(groupId));
   const [memoryData, setMemoryData] = useState({
     nickname: "",
     title: "",
-    image: null,
     content: "",
     tags: "",
     location: "",
     date: "",
     isPublic: true,
-    password: "", // 추억 비밀번호 (항상 필요)
+    password: "", // 추억 비밀번호
+    image: null, // 이미지 파일
   });
 
-  const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
+  const [error, setError] = useState(""); // 에러 처리용 상태
   const navigate = useNavigate();
 
+  // 입력값 변경 핸들러
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setMemoryData({ ...memoryData, [name]: value });
   };
 
+  // 파일 변경 핸들러
   const handleFileChange = (e) => {
     setMemoryData({ ...memoryData, image: e.target.files[0] });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // 이미지 업로드 함수
+  const uploadImage = async (imageFile) => {
+    try {
+      const formData = new FormData();
+      formData.append("image", imageFile);
 
-    // 필수 입력 필드 확인
+      const response = await api.post("/image", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      return response.data.imageUrl; // 업로드된 이미지 URL 반환
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      throw new Error("이미지 업로드에 실패했습니다.");
+    }
+  };
+
+  // 폼 제출 핸들러
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     if (
       !memoryData.nickname ||
       !memoryData.title ||
       !memoryData.content ||
       !memoryData.location ||
       !memoryData.date ||
-      !memoryData.password // 비밀번호는 항상 필수
+      !memoryData.password ||
+      !memoryData.image // 이미지 파일 필수
     ) {
       alert("모든 필드를 입력해 주세요.");
       return;
     }
 
-    // 그룹 비밀번호 인증을 위해 모달 열기
-    setPasswordModalOpen(true);
-  };
+    try {
+      // 이미지 파일을 먼저 업로드하여 URL을 받아옴
+      const imageUrl = await uploadImage(memoryData.image);
 
-  const handleModalSubmit = (groupPassword) => {
-    // 그룹 비밀번호를 확인하고 추억 생성
-    if (groupPassword === group.password) {
-      setPasswordModalOpen(false);
+      // tags를 콤마로 구분된 문자열로 받아서 배열로 변환
+      const tagsArray = memoryData.tags
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter((tag) => tag !== ""); // 빈 태그 제거
 
-      const newMemory = {
-        id: Date.now(),
-        groupId: group.id, // 그룹 ID 추가
+      // 서버에 전송할 바디 데이터
+      const postData = {
         nickname: memoryData.nickname,
         title: memoryData.title,
-        imageUrl: memoryData.image ? URL.createObjectURL(memoryData.image) : "",
         content: memoryData.content,
-        tags: memoryData.tags,
+        postPassword: memoryData.password,
+        imageUrl, // 업로드된 이미지 URL
+        tags: tagsArray, // 태그 배열로 전송
         location: memoryData.location,
-        date: memoryData.date,
+        moment: memoryData.date,
         isPublic: memoryData.isPublic,
-        password: memoryData.password, // 항상 비밀번호 저장
-        likes: 0,
-        views: 0,
       };
 
-      addMemoryToGroup(group.id, newMemory);
+      console.log("Post Data 내용:", postData);
 
-      alert("추억이 성공적으로 생성되었습니다.");
+      // 게시글 생성 API 호출
+      const createResponse = await createPost(groupId, postData);
 
-      navigate(`/group/${group.id}`); // 그룹 상세 페이지로 이동
-    } else {
-      alert("그룹 비밀번호가 일치하지 않습니다.");
+      if (createResponse && createResponse.id) {
+        alert("추억이 성공적으로 생성되었습니다.");
+        addMemoryToGroup(groupId, createResponse);
+
+        navigate(`/group/${groupId}`);
+      } else {
+        setError("게시글 생성에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("Error creating memory:", error);
+      setError("서버와의 통신에 문제가 발생했습니다.");
     }
   };
 
-  const handleModalClose = () => {
-    setPasswordModalOpen(false);
-  };
-
+  // 모달 닫기 버튼
   const handleCloseModal = () => {
     navigate(-1); // 이전 페이지로 이동
   };
 
+  // 공개 설정 토글
   const togglePublicOption = () => {
     setMemoryData({ ...memoryData, isPublic: !memoryData.isPublic });
   };
@@ -109,6 +134,7 @@ const MemoryUploadPage = ({ groups, addMemoryToGroup }) => {
   return (
     <UploadContainer>
       <h2>추억 올리기</h2>
+      {error && <p style={{ color: "red" }}>{error}</p>}
       <UploadForm onSubmit={handleSubmit}>
         <FormGroup>
           <Label>닉네임</Label>
@@ -134,7 +160,7 @@ const MemoryUploadPage = ({ groups, addMemoryToGroup }) => {
         </FormGroup>
         <FormGroup>
           <Label>이미지</Label>
-          <Input type="file" onChange={handleFileChange} />
+          <Input type="file" accept="image/*" onChange={handleFileChange} />
         </FormGroup>
         <FormGroup>
           <Label>본문</Label>
@@ -151,7 +177,7 @@ const MemoryUploadPage = ({ groups, addMemoryToGroup }) => {
           <Input
             type="text"
             name="tags"
-            placeholder="태그를 입력해 주세요"
+            placeholder="태그를 입력해 주세요 (콤마로 구분)"
             value={memoryData.tags}
             onChange={handleInputChange}
           />
@@ -189,7 +215,6 @@ const MemoryUploadPage = ({ groups, addMemoryToGroup }) => {
             <span>{memoryData.isPublic ? "공개" : "비공개"}</span>
           </ToggleContainer>
         </FormGroup>
-        {/* 비밀번호 입력 필드를 항상 표시 */}
         <FormGroup>
           <Label>추억 비밀번호</Label>
           <PasswordInput
@@ -204,15 +229,6 @@ const MemoryUploadPage = ({ groups, addMemoryToGroup }) => {
         <SubmitButton type="submit">올리기</SubmitButton>
       </UploadForm>
       <CloseButton onClick={handleCloseModal}>×</CloseButton>
-
-      {isPasswordModalOpen && (
-        <PasswordModal
-          onSubmit={handleModalSubmit}
-          onClose={handleModalClose}
-          title="그룹 비밀번호 인증"
-          placeholder="그룹 비밀번호를 입력해 주세요"
-        />
-      )}
     </UploadContainer>
   );
 };

@@ -37,8 +37,13 @@ const GroupPage = () => {
       {groups.length > 0 ? (
         groups.map((group) => (
           <GroupCard key={group.id} onClick={() => handleGroupClick(group.id)}>
-            {group.imageUrl && (
+            {group.imageUrl ? (
               <GroupCardImage src={group.imageUrl} alt={group.name} /> // 이미지 표시
+            ) : (
+              <GroupCardImage
+                src="https://via.placeholder.com/150" // 기본 이미지
+                alt="placeholder"
+              />
             )}
             <GroupCardContent>
               <GroupCardTitle>{group.name}</GroupCardTitle>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { verifyGroupPassword, updateGroup } from "../api/groupApi";
+import { uploadImageToServer } from "../api/api"; // 이미지 업로드 함수 import
 import {
   ModalContainer,
   ModalContent,
@@ -19,43 +20,43 @@ const GroupUpdateModal = ({ group, onClose, onUpdate }) => {
   const [newGroupDescription, setNewGroupDescription] = useState(
     group.description
   );
-  const [newGroupImage, setNewGroupImage] = useState(null);
+  const [newGroupImage, setNewGroupImage] = useState(null); // 이미지 파일을 상태로 관리
   const [isPublic, setIsPublic] = useState(group.isPublic);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); // 로딩 상태 추가
 
   const handleUpdate = async () => {
     try {
-      console.log("Password before API call:", password);
-
       if (!password) {
         setError("비밀번호를 입력해 주세요.");
         return;
       }
 
+      setLoading(true); // 로딩 시작
+
       // 비밀번호 검증 API 호출
       const verifyResponse = await verifyGroupPassword(group.id, password);
-      console.log("Verify Response:", verifyResponse);
 
       if (verifyResponse.message && verifyResponse.message.includes("확인")) {
-        console.log(
-          "Password verification passed, proceeding with group update."
-        );
+        let imageUrl = group.imageUrl;
 
-        // 그룹 데이터를 JSON 형식으로 전송 (FormData 사용 안함)
+        // 새로운 이미지가 있을 경우 업로드
+        if (newGroupImage) {
+          imageUrl = await uploadImageToServer(newGroupImage); // 이미지 서버 업로드
+        }
+
+        // 그룹 데이터를 JSON 형식으로 전송
         const updateData = {
           name: newGroupName,
           description: newGroupDescription,
           isPublic: isPublic,
-          imageUrl: newGroupImage || group.imageUrl, // 이미지 URL
+          imageUrl: imageUrl, // 업로드된 이미지 URL
           introduction: newGroupDescription,
           password: password, // 비밀번호 추가
         };
 
-        console.log("Request Body:", updateData);
-
         // 그룹 업데이트 API 호출
         const updateResponse = await updateGroup(group.id, updateData);
-        console.log("Update Response:", updateResponse);
 
         if (updateResponse && updateResponse.id) {
           onUpdate({
@@ -78,6 +79,8 @@ const GroupUpdateModal = ({ group, onClose, onUpdate }) => {
       } else {
         setError("그룹 수정 중 오류가 발생했습니다.");
       }
+    } finally {
+      setLoading(false); // 로딩 종료
     }
   };
 
@@ -102,7 +105,7 @@ const GroupUpdateModal = ({ group, onClose, onUpdate }) => {
           <Label>그룹 이미지 변경</Label>
           <InputField
             type="file"
-            onChange={(e) => setNewGroupImage(e.target.files[0])}
+            onChange={(e) => setNewGroupImage(e.target.files[0])} // 이미지 파일 저장
           />
           <Label>그룹 공개 선택</Label>
           <ToggleSwitch>
@@ -121,7 +124,9 @@ const GroupUpdateModal = ({ group, onClose, onUpdate }) => {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="그룹 비밀번호를 입력해 주세요"
           />
-          <SubmitButton onClick={handleUpdate}>수정하기</SubmitButton>
+          <SubmitButton onClick={handleUpdate} disabled={loading}>
+            {loading ? "수정 중..." : "수정하기"}
+          </SubmitButton>
           {error && <p style={{ color: "red" }}>{error}</p>}
         </ModalContent>
       </ModalContainer>
