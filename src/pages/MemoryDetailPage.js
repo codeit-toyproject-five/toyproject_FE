@@ -1,3 +1,4 @@
+// src/pages/MemoryDetailPage.js
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
@@ -25,8 +26,14 @@ import EditCommentModal from "../components/EditCommentModal";
 import DeleteCommentModal from "../components/DeleteCommentModal";
 import MemoryEditModal from "../components/MemoryEditModal";
 import MemoryDeleteModal from "../components/MemoryDeleteModal";
+import {
+  getPostDetails,
+  likePost,
+  deletePost,
+  updatePost,
+} from "../api/postService";
 
-const MemoryDetailPage = ({ groups, updateMemoryInGroup }) => {
+const MemoryDetailPage = ({ updateMemoryInGroup }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { memoryId } = useParams();
@@ -40,31 +47,44 @@ const MemoryDetailPage = ({ groups, updateMemoryInGroup }) => {
   const [currentComment, setCurrentComment] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const commentsPerPage = 3;
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const foundMemory = groups
-      .flatMap((group) => group.memories || [])
-      .find((mem) => mem.id === parseInt(memoryId));
+    const fetchMemoryDetails = async () => {
+      try {
+        const data = await getPostDetails(memoryId);
+        // 비공개 메모리 접근 제어
+        if (!data.isPublic && !location.state?.authenticated) {
+          navigate(`/private-group/${data.groupId}/private-memory-access`, {
+            state: { memory: data },
+          });
+          return;
+        }
+        setMemory(data);
+        setLoading(false);
+      } catch (err) {
+        console.error("메모리 상세 조회 오류:", err);
+        setError(err.message || "메모리를 불러오는 데 실패했습니다.");
+        setLoading(false);
+      }
+    };
 
-    if (!foundMemory) {
-      alert("추억을 찾을 수 없습니다.");
-      navigate(-1);
-      return;
+    fetchMemoryDetails();
+  }, [location, navigate, memoryId]);
+
+  const handleLike = async () => {
+    if (!memory) return;
+    try {
+      const updatedData = await likePost(memory.id);
+      setMemory((prevMemory) => ({
+        ...prevMemory,
+        likeCount: updatedData.likeCount,
+      }));
+    } catch (err) {
+      alert(err.message || "공감을 추가하는 데 실패했습니다.");
     }
-
-    if (!foundMemory.isPublic && !location.state?.authenticated) {
-      navigate(`/private-group/${foundMemory.groupId}/private-memory-access`, {
-        state: { memory: foundMemory },
-      });
-      return;
-    }
-
-    setMemory(foundMemory);
-  }, [location, navigate, memoryId, groups]);
-
-  if (!memory) {
-    return <p>로딩 중...</p>;
-  }
+  };
 
   const handleCommentSubmit = (newComment) => {
     setComments([
@@ -102,51 +122,25 @@ const MemoryDetailPage = ({ groups, updateMemoryInGroup }) => {
     }
   };
 
-  const handleMemoryEditSubmit = (updatedMemory) => {
-    const group = groups.find((g) =>
-      g.memories?.some((mem) => mem.id === memory.id)
-    );
-
-    if (!group) {
-      alert("그룹을 찾을 수 없습니다.");
-      return;
+  const handleMemoryEditSubmit = async (updatedMemory) => {
+    try {
+      const updatedData = await updatePost(memory.id, updatedMemory);
+      setMemory(updatedData);
+      alert("추억이 성공적으로 수정되었습니다.");
+      setMemoryEditModalOpen(false);
+      navigate(`/group/${updatedData.groupId}`);
+    } catch (err) {
+      alert(err.message || "추억을 수정하는 데 실패했습니다.");
     }
-
-    updateMemoryInGroup(group.id, { ...memory, ...updatedMemory });
-
-    setMemory({ ...memory, ...updatedMemory });
-
-    alert("추억이 성공적으로 수정되었습니다.");
-    setMemoryEditModalOpen(false);
-
-    navigate(`/group/${group.id}`);
   };
 
-  const handleMemoryDelete = (password) => {
-    if (password === memory.password) {
-      const group = groups.find((g) =>
-        g.memories?.some((mem) => mem.id === memory.id)
-      );
-
-      if (!group) {
-        alert("그룹을 찾을 수 없습니다.");
-        return;
-      }
-
-      const updatedGroup = {
-        ...group,
-        memories: group.memories.filter((mem) => mem.id !== memory.id),
-      };
-
-      // 그룹 상태 업데이트 후 이동
-      updateMemoryInGroup(group.id, updatedGroup);
-
-      setTimeout(() => {
-        alert("추억이 성공적으로 삭제되었습니다.");
-        navigate(`/group/${group.id}`);
-      }, 0);
-    } else {
-      alert("비밀번호가 일치하지 않습니다.");
+  const handleMemoryDelete = async (password) => {
+    try {
+      await deletePost(memory.id, password);
+      alert("추억이 성공적으로 삭제되었습니다.");
+      navigate(`/group/${memory.groupId}`);
+    } catch (err) {
+      alert(err.message || "추억을 삭제하는 데 실패했습니다.");
     }
   };
 
@@ -154,6 +148,19 @@ const MemoryDetailPage = ({ groups, updateMemoryInGroup }) => {
     (currentPage - 1) * commentsPerPage,
     currentPage * commentsPerPage
   );
+
+  if (loading) {
+    return <MemoryDetailContainer>로딩 중...</MemoryDetailContainer>;
+  }
+
+  if (error) {
+    return (
+      <MemoryDetailContainer>
+        <p>{error}</p>
+        <Button onClick={() => navigate(-1)}>뒤로가기</Button>
+      </MemoryDetailContainer>
+    );
+  }
 
   return (
     <MemoryDetailContainer>
@@ -176,22 +183,21 @@ const MemoryDetailPage = ({ groups, updateMemoryInGroup }) => {
       </div>
       <Title>{memory.title}</Title>
       <div>
-        <span>{memory.location}</span> · <span>{memory.date}</span>
+        <span>{memory.location}</span> ·{" "}
+        <span>{new Date(memory.moment).toLocaleDateString()}</span>
       </div>
       <Info>
         <InteractionInfo>
           <span>조회수: {memory.views}</span>
-          <span>공감: {memory.likes}</span>
+          <span>공감: {memory.likeCount}</span>
         </InteractionInfo>
-        <Button>공감 보내기</Button>
+        <Button onClick={handleLike}>공감 보내기</Button>
       </Info>
       {memory.imageUrl && <Image src={memory.imageUrl} alt={memory.title} />}
       <Content>{memory.content}</Content>
       <div>
         {memory.tags &&
-          memory.tags
-            .split(",")
-            .map((tag, index) => <Tag key={index}>#{tag.trim()}</Tag>)}
+          memory.tags.map((tag, index) => <Tag key={index}>#{tag.trim()}</Tag>)}
       </div>
       <ActionButtonContainer>
         <Button onClick={() => setCommentModalOpen(true)}>댓글 등록하기</Button>

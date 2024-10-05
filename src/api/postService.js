@@ -112,3 +112,19 @@ export const checkPostPublicStatus = async (postId) => {
     throw error.response ? error.response.data : new Error("Server error");
   }
 };
+
+// 게시글 상세 조회
+export const getPostDetails = async (postId) => {
+  try {
+    const response = await api.get(`/posts/${postId}`, {
+      headers: {
+        Accept: "application/json",
+      },
+    });
+    console.log("게시글 상세 정보:", response.data); // 응답 데이터 확인을 위한 로그
+    return response.data;
+  } catch (error) {
+    console.error("게시글 상세 조회 오류:", error.response || error);
+    throw error.response ? error.response.data : new Error("Server error");
+  }
+};
