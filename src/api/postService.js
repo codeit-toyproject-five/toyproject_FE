@@ -128,3 +128,18 @@ export const getPostDetails = async (postId) => {
     throw error.response ? error.response.data : new Error("Server error");
   }
 };
+
+// 모든 서비스 함수를 객체에 할당
+const postService = {
+  createPost,
+  getGroupPosts,
+  updatePost,
+  deletePost,
+  verifyPostPassword,
+  likePost,
+  checkPostPublicStatus,
+  getPostDetails,
+};
+
+// 객체를 기본 내보내기로 내보냄
+export default postService;

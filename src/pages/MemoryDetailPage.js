@@ -75,13 +75,38 @@ const MemoryDetailPage = ({ updateMemoryInGroup }) => {
 
   const handleLike = async () => {
     if (!memory) return;
+
+    // Optimistic UI 업데이트: 공감 수를 즉시 증가
+    setMemory((prevMemory) => ({
+      ...prevMemory,
+      likeCount: prevMemory.likeCount + 1,
+    }));
+
     try {
       const updatedData = await likePost(memory.id);
+      console.log("업데이트된 데이터:", updatedData);
+
+      // 서버 응답 데이터 구조에 따라 likeCount 업데이트
+      if (updatedData.likeCount !== undefined) {
+        setMemory((prevMemory) => ({
+          ...prevMemory,
+          likeCount: updatedData.likeCount,
+        }));
+      } else if (updatedData.post && updatedData.post.likeCount !== undefined) {
+        setMemory((prevMemory) => ({
+          ...prevMemory,
+          likeCount: updatedData.post.likeCount,
+        }));
+      } else {
+        console.warn("likeCount를 찾을 수 없습니다. 서버 응답을 확인하세요.");
+      }
+    } catch (err) {
+      // 오류 발생 시 Optimistic UI 업데이트 되돌림
       setMemory((prevMemory) => ({
         ...prevMemory,
-        likeCount: updatedData.likeCount,
+        likeCount: prevMemory.likeCount - 1,
       }));
-    } catch (err) {
+      console.error("공감 추가 오류:", err);
       alert(err.message || "공감을 추가하는 데 실패했습니다.");
     }
   };
