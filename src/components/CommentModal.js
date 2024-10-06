@@ -1,4 +1,5 @@
-// src/components/CommentModal.js
+// src/components/CommentModal.jsx
+
 import React, { useState } from "react";
 import {
   ModalContainer,
@@ -9,19 +10,29 @@ import {
   SubmitButton,
 } from "../styles/CommentModalStyle";
 
-const CommentModal = ({ onClose, onSubmit }) => {
+const CommentModal = ({ postId, onClose, onSubmit }) => {
   const [nickname, setNickname] = useState("");
   const [content, setContent] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = () => {
-    if (nickname && content && password) {
-      // 부모 컴포넌트로 댓글 데이터 전달
-      onSubmit({ nickname, content, password });
-      // 필드 초기화
-      setNickname("");
-      setContent("");
-      setPassword("");
+  const handleSubmit = async () => {
+    if (nickname.trim() && content.trim() && password.trim()) {
+      try {
+        // 부모 컴포넌트로 댓글 데이터 전달
+        onSubmit({
+          nickname: nickname.trim(),
+          content: content.trim(),
+          password: password.trim(),
+        });
+        // 필드 초기화
+        setNickname("");
+        setContent("");
+        setPassword("");
+        onClose(); // 모달 닫기
+      } catch (error) {
+        console.error("Failed to create comment:", error);
+        alert("댓글 등록에 실패했습니다.");
+      }
     } else {
       alert("모든 필드를 채워주세요.");
     }

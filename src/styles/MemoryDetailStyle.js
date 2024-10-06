@@ -1,3 +1,5 @@
+// src/styles/MemoryDetailStyle.js
+
 import styled from "styled-components";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 
@@ -162,27 +164,6 @@ export const Comment = styled.div`
     position: absolute;
     bottom: 10px; /* Place actions at the bottom */
     right: 10px; /* Align to the right */
-  }
-`;
-
-export const PaginationContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-`;
-
-export const PageButton = styled.button`
-  padding: 5px 10px;
-  margin: 0 5px;
-  border: 1px solid #ddd;
-  background-color: ${({ active }) => (active ? "#333" : "white")};
-  color: ${({ active }) => (active ? "white" : "#333")};
-  border-radius: 5px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #333;
-    color: white;
   }
 `;
 

@@ -1,51 +1,100 @@
-import api from "./api";
+// src/api/commentService.js
 
-// 댓글 생성
-export const createComment = async (postId, commentData) => {
+import axios from "axios";
+
+// Axios 인스턴스 생성
+const api = axios.create({
+  baseURL: "https://toyproject-be.onrender.com/api",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// 댓글 목록 조회
+export const getComments = async (postId, page = 1, pageSize = 1000) => {
   try {
-    const response = await api.post(`/posts/${postId}/comments`, commentData, {
-      headers: { "Content-Type": "application/json" },
+    const response = await api.get(`/posts/${postId}/comments`, {
+      params: { page, pageSize },
     });
-    return response.data;
+    console.log("Fetched comments:", response.data);
+    return response.data; // 서버의 응답 구조에 따라 조정 필요
   } catch (error) {
-    throw error.response ? error.response.data : new Error("댓글 생성 실패");
+    console.error("Error fetching comments:", error.response || error);
+    throw error.response
+      ? error.response.data
+      : new Error("Failed to fetch comments");
   }
 };
 
-// 댓글 수정
-export const updateComment = async (commentId, commentData) => {
+// 댓글 등록 API
+export const createComment = async (postId, nickname, content, password) => {
   try {
-    const response = await api.patch(`/comments/${commentId}`, commentData, {
-      headers: { "Content-Type": "application/json" },
+    console.log("Creating comment with data:", {
+      postId,
+      nickname,
+      content,
+      password,
     });
-    return response.data;
+    const response = await api.post(`/posts/${postId}/comments`, {
+      nickname,
+      content,
+      password,
+    });
+    console.log("Comment created successfully:", response.data);
+    return response.data; // 생성된 댓글 객체 반환
   } catch (error) {
-    throw error.response ? error.response.data : new Error("댓글 수정 실패");
+    if (error.response) {
+      console.error("Error creating comment:", error.response.data);
+      throw error.response.data;
+    } else {
+      console.error("Error creating comment:", error.message);
+      throw new Error("Failed to create comment");
+    }
   }
 };
 
 // 댓글 삭제
 export const deleteComment = async (commentId, password) => {
   try {
-    await api.delete(`/comments/${commentId}`, {
-      data: { password }, // 비밀번호 전송
-      headers: { "Content-Type": "application/json" },
+    console.log("Deleting comment ID:", commentId, "with password:", password);
+    const response = await api.delete(`/comments/${commentId}`, {
+      data: { password }, // Password를 body로 전달
     });
+    console.log("Comment deleted successfully:", response.data);
+    return response.data;
   } catch (error) {
-    throw error.response ? error.response.data : new Error("댓글 삭제 실패");
+    console.error("Error deleting comment:", error.response || error);
+    throw error.response
+      ? error.response.data
+      : new Error("Failed to delete comment");
   }
 };
 
-// 댓글 리스트 조회
-export const getComments = async (postId, page = 1, pageSize = 10) => {
+// 댓글 수정
+export const updateComment = async (commentId, nickname, content, password) => {
   try {
-    const response = await api.get(`/posts/${postId}/comments`, {
-      params: { page, pageSize },
+    console.log("Updating comment with data:", {
+      commentId,
+      nickname,
+      content,
+      password,
     });
-    return response.data;
+    const response = await api.patch(`/comments/${commentId}`, {
+      nickname,
+      content,
+      password,
+    });
+    console.log("Comment updated successfully:", response.data);
+    return response.data; // 수정된 댓글 객체 반환
   } catch (error) {
-    throw error.response
-      ? error.response.data
-      : new Error("댓글 불러오기 실패");
+    if (error.response) {
+      console.error("Error updating comment:", error.response.data);
+      throw error.response.data;
+    } else {
+      console.error("Error updating comment:", error.message);
+      throw new Error("Failed to update comment");
+    }
   }
 };
+
+export default api;

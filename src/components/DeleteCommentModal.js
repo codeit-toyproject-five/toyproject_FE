@@ -1,4 +1,5 @@
-// src/components/DeleteCommentModal.js
+// src/components/DeleteCommentModal.jsx
+
 import React, { useState } from "react";
 import {
   ModalContainer,
@@ -8,12 +9,18 @@ import {
   SubmitButton,
 } from "../styles/CommentModalStyle";
 
-const DeleteCommentModal = ({ onClose, onDelete }) => {
+const DeleteCommentModal = ({ onClose, onDelete, currentComment }) => {
   const [password, setPassword] = useState("");
 
-  const handleDelete = () => {
-    if (password) {
-      onDelete(password);
+  const handleDelete = async () => {
+    if (password.trim()) {
+      try {
+        // 부모 컴포넌트의 onDelete는 비밀번호를 인자로 받도록 함
+        await onDelete(password.trim());
+      } catch (error) {
+        console.error("Failed to delete comment:", error);
+        alert("댓글 삭제에 실패했습니다.");
+      }
     } else {
       alert("비밀번호를 입력해주세요.");
     }

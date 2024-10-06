@@ -1,4 +1,5 @@
-// src/pages/MemoryDetailPage.js
+// src/pages/MemoryDetailPage.jsx
+
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
@@ -15,8 +16,6 @@ import {
   Tag,
   CommentsContainer,
   Comment,
-  PaginationContainer,
-  PageButton,
   EditIcon,
   DeleteIcon,
   Button,
@@ -32,6 +31,12 @@ import {
   deletePost,
   updatePost,
 } from "../api/postService";
+import {
+  getComments,
+  createComment,
+  deleteComment,
+  updateComment,
+} from "../api/commentService";
 
 const MemoryDetailPage = ({ updateMemoryInGroup }) => {
   const location = useLocation();
@@ -45,8 +50,6 @@ const MemoryDetailPage = ({ updateMemoryInGroup }) => {
   const [isMemoryEditModalOpen, setMemoryEditModalOpen] = useState(false);
   const [isMemoryDeleteModalOpen, setMemoryDeleteModalOpen] = useState(false);
   const [currentComment, setCurrentComment] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const commentsPerPage = 3;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -54,6 +57,8 @@ const MemoryDetailPage = ({ updateMemoryInGroup }) => {
     const fetchMemoryDetails = async () => {
       try {
         const data = await getPostDetails(memoryId);
+        console.log("Fetched memory details:", data);
+
         // 비공개 메모리 접근 제어
         if (!data.isPublic && !location.state?.authenticated) {
           navigate(`/private-group/${data.groupId}/private-memory-access`, {
@@ -70,7 +75,18 @@ const MemoryDetailPage = ({ updateMemoryInGroup }) => {
       }
     };
 
+    const fetchComments = async () => {
+      try {
+        const response = await getComments(memoryId, 1, 1000); // 모든 댓글을 가져옵니다.
+        console.log("Fetched comments:", response);
+        setComments(response.comments || response.data || []);
+      } catch (err) {
+        console.error("댓글 불러오기 오류:", err);
+      }
+    };
+
     fetchMemoryDetails();
+    fetchComments();
   }, [location, navigate, memoryId]);
 
   const handleLike = async () => {
@@ -84,22 +100,11 @@ const MemoryDetailPage = ({ updateMemoryInGroup }) => {
 
     try {
       const updatedData = await likePost(memory.id);
-      console.log("업데이트된 데이터:", updatedData);
-
-      // 서버 응답 데이터 구조에 따라 likeCount 업데이트
-      if (updatedData.likeCount !== undefined) {
-        setMemory((prevMemory) => ({
-          ...prevMemory,
-          likeCount: updatedData.likeCount,
-        }));
-      } else if (updatedData.post && updatedData.post.likeCount !== undefined) {
-        setMemory((prevMemory) => ({
-          ...prevMemory,
-          likeCount: updatedData.post.likeCount,
-        }));
-      } else {
-        console.warn("likeCount를 찾을 수 없습니다. 서버 응답을 확인하세요.");
-      }
+      console.log("Updated like count:", updatedData.likeCount);
+      setMemory((prevMemory) => ({
+        ...prevMemory,
+        likeCount: updatedData.likeCount,
+      }));
     } catch (err) {
       // 오류 발생 시 Optimistic UI 업데이트 되돌림
       setMemory((prevMemory) => ({
@@ -111,45 +116,81 @@ const MemoryDetailPage = ({ updateMemoryInGroup }) => {
     }
   };
 
-  const handleCommentSubmit = (newComment) => {
-    setComments([
-      ...comments,
-      {
-        id: comments.length + 1,
-        ...newComment,
-        date: new Date().toISOString().split("T")[0],
-      },
-    ]);
-    setCommentModalOpen(false);
+  const handleCommentSubmit = async (newComment) => {
+    try {
+      console.log("Submitting new comment:", newComment);
+      setLoading(true);
+
+      const createdComment = await createComment(
+        memoryId,
+        newComment.nickname,
+        newComment.content,
+        newComment.password
+      );
+
+      console.log("Created comment received:", createdComment);
+
+      if (createdComment) {
+        setComments((prevComments) => [createdComment, ...prevComments]);
+      }
+
+      setCommentModalOpen(false);
+    } catch (error) {
+      console.error("댓글 등록 오류:", error);
+      alert(error.message || "댓글 등록에 실패했습니다.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleEditCommentSubmit = (updatedComment) => {
-    setComments(
-      comments.map((comment) =>
-        comment.id === currentComment.id
-          ? { ...comment, ...updatedComment }
-          : comment
-      )
-    );
-    setEditModalOpen(false);
-    setCurrentComment(null);
+  const handleEditCommentSubmit = async (updatedComment) => {
+    try {
+      console.log("Submitting updated comment:", updatedComment);
+      const response = await updateComment(
+        currentComment.id, // commentId
+        updatedComment.nickname,
+        updatedComment.content,
+        updatedComment.password
+      );
+      console.log("Updated comment:", response);
+      setComments(
+        comments.map((comment) =>
+          comment.id === currentComment.id ? response : comment
+        )
+      );
+      setEditModalOpen(false);
+      setCurrentComment(null);
+    } catch (error) {
+      console.error("댓글 수정 오류:", error);
+      alert(error.message || "댓글을 수정하는 데 실패했습니다.");
+    }
   };
 
-  const handleDeleteComment = (password) => {
-    if (password === currentComment.password) {
+  const handleDeleteComment = async (password) => {
+    try {
+      console.log(
+        "Deleting comment ID:",
+        currentComment.id,
+        "with password:",
+        password
+      );
+      await deleteComment(currentComment.id, password);
+      console.log("Deleted comment ID:", currentComment.id);
       setComments(
         comments.filter((comment) => comment.id !== currentComment.id)
       );
       setDeleteModalOpen(false);
       setCurrentComment(null);
-    } else {
-      alert("비밀번호가 일치하지 않습니다.");
+    } catch (error) {
+      console.error("댓글 삭제 오류:", error);
+      alert(error.message || "댓글을 삭제하는 데 실패했습니다.");
     }
   };
 
   const handleMemoryEditSubmit = async (updatedMemory) => {
     try {
       const updatedData = await updatePost(memory.id, updatedMemory);
+      console.log("Updated memory:", updatedData);
       setMemory(updatedData);
       alert("추억이 성공적으로 수정되었습니다.");
       setMemoryEditModalOpen(false);
@@ -161,18 +202,15 @@ const MemoryDetailPage = ({ updateMemoryInGroup }) => {
 
   const handleMemoryDelete = async (password) => {
     try {
+      console.log("Deleting memory ID:", memory.id, "with password:", password);
       await deletePost(memory.id, password);
+      console.log("Deleted memory ID:", memory.id);
       alert("추억이 성공적으로 삭제되었습니다.");
       navigate(`/group/${memory.groupId}`);
     } catch (err) {
       alert(err.message || "추억을 삭제하는 데 실패했습니다.");
     }
   };
-
-  const paginatedComments = comments.slice(
-    (currentPage - 1) * commentsPerPage,
-    currentPage * commentsPerPage
-  );
 
   if (loading) {
     return <MemoryDetailContainer>로딩 중...</MemoryDetailContainer>;
@@ -229,11 +267,14 @@ const MemoryDetailPage = ({ updateMemoryInGroup }) => {
       </ActionButtonContainer>
 
       <CommentsContainer>
-        {paginatedComments.map((comment) => (
+        {comments.map((comment) => (
           <Comment key={comment.id}>
             <div className="comment-header">
               <span className="nickname">{comment.nickname}</span>
-              <span className="date">{comment.date}</span>
+              <span className="date">
+                {new Date(comment.createdAt).toLocaleString()}{" "}
+                {/* 날짜와 시간 표시 */}
+              </span>
             </div>
             <p className="comment-content">{comment.content}</p>
             <div className="comment-actions">
@@ -254,23 +295,12 @@ const MemoryDetailPage = ({ updateMemoryInGroup }) => {
         ))}
       </CommentsContainer>
 
-      <PaginationContainer>
-        {Array.from(
-          { length: Math.ceil(comments.length / commentsPerPage) },
-          (_, index) => (
-            <PageButton
-              key={index + 1}
-              active={index + 1 === currentPage}
-              onClick={() => setCurrentPage(index + 1)}
-            >
-              {index + 1}
-            </PageButton>
-          )
-        )}
-      </PaginationContainer>
+      {/* 페이징 제거: 모든 댓글을 한 페이지에 표시 */}
 
+      {/* 모달들 */}
       {isCommentModalOpen && (
         <CommentModal
+          postId={memoryId} // postId를 CommentModal에 전달
           onClose={() => setCommentModalOpen(false)}
           onSubmit={handleCommentSubmit}
         />
@@ -286,6 +316,7 @@ const MemoryDetailPage = ({ updateMemoryInGroup }) => {
         <DeleteCommentModal
           onClose={() => setDeleteModalOpen(false)}
           onDelete={handleDeleteComment}
+          currentComment={currentComment}
         />
       )}
       {isMemoryEditModalOpen && (

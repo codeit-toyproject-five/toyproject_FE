@@ -1,4 +1,5 @@
-// src/components/EditCommentModal.js
+// src/components/EditCommentModal.jsx
+
 import React, { useState } from "react";
 import {
   ModalContainer,
@@ -14,9 +15,24 @@ const EditCommentModal = ({ onClose, onSubmit, currentComment }) => {
   const [content, setContent] = useState(currentComment.content);
   const [password, setPassword] = useState("");
 
-  const handleSubmit = () => {
-    if (nickname && content && password) {
-      onSubmit({ nickname, content, password });
+  const handleSubmit = async () => {
+    if (nickname.trim() && content.trim() && password.trim()) {
+      try {
+        console.log("Submitting updated comment:", {
+          nickname: nickname.trim(),
+          content: content.trim(),
+          password: password.trim(),
+        });
+        // 부모 컴포넌트의 onSubmit은 업데이트된 댓글 데이터를 받도록 함
+        await onSubmit({
+          nickname: nickname.trim(),
+          content: content.trim(),
+          password: password.trim(),
+        });
+      } catch (error) {
+        console.error("Failed to update comment:", error);
+        alert("댓글 수정에 실패했습니다.");
+      }
     } else {
       alert("모든 필드를 채워주세요.");
     }
