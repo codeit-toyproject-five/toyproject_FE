@@ -4,7 +4,6 @@ import api from "./api";
 // 게시글 생성
 export const createPost = async (groupId, postData) => {
   try {
-    console.log("JSON 바디 전송 내용:", postData);
     const response = await api.post(`/groups/${groupId}/posts`, postData, {
       headers: {
         "Content-Type": "application/json",
@@ -24,13 +23,12 @@ export const getGroupPosts = async (
   pageSize = 10,
   sortBy = "latest",
   keyword = "",
-  isPublic = true // boolean 타입 유지
+  isPublic = true
 ) => {
   try {
     const response = await api.get(`/groups/${groupId}/posts`, {
       params: { page, pageSize, sortBy, keyword, isPublic },
     });
-    console.log("API Response:", response.data); // 응답 데이터 확인을 위한 로그
     return response.data;
   } catch (error) {
     console.error("Error fetching group posts:", error.response || error);
@@ -57,7 +55,7 @@ export const updatePost = async (postId, postData) => {
 export const deletePost = async (postId, postPassword) => {
   try {
     const response = await api.delete(`/posts/${postId}`, {
-      data: { postPassword },
+      data: { postPassword }, // JSON 형식으로 비밀번호 전달
       headers: {
         "Content-Type": "application/json",
       },
@@ -69,18 +67,13 @@ export const deletePost = async (postId, postPassword) => {
   }
 };
 
-// 게시글 비밀번호 확인
+// 비밀번호 확인
 export const verifyPostPassword = async (postId, password) => {
   try {
-    const response = await api.post(
-      `/posts/${postId}/verify-password`,
-      { password },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await api.post("/posts/verify-password", {
+      postId, // body에 postId 전달
+      password, // body에 password 전달
+    });
     return response.data;
   } catch (error) {
     console.error("Error verifying post password:", error.response || error);
@@ -114,32 +107,19 @@ export const checkPostPublicStatus = async (postId) => {
 };
 
 // 게시글 상세 조회
-export const getPostDetails = async (postId) => {
+export const getPostDetails = async (postId, isAuthenticated = false) => {
   try {
     const response = await api.get(`/posts/${postId}`, {
       headers: {
         Accept: "application/json",
       },
+      params: {
+        isAuthenticated, // 인증 상태 전달
+      },
     });
-    console.log("게시글 상세 정보:", response.data); // 응답 데이터 확인을 위한 로그
     return response.data;
   } catch (error) {
-    console.error("게시글 상세 조회 오류:", error.response || error);
+    console.error("Error fetching post details:", error.response || error);
     throw error.response ? error.response.data : new Error("Server error");
   }
 };
-
-// 모든 서비스 함수를 객체에 할당
-const postService = {
-  createPost,
-  getGroupPosts,
-  updatePost,
-  deletePost,
-  verifyPostPassword,
-  likePost,
-  checkPostPublicStatus,
-  getPostDetails,
-};
-
-// 객체를 기본 내보내기로 내보냄
-export default postService;

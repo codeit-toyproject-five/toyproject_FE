@@ -1,3 +1,4 @@
+// src/components/CommentModal.js
 import React, { useState } from "react";
 import {
   ModalContainer,
@@ -15,7 +16,9 @@ const CommentModal = ({ onClose, onSubmit }) => {
 
   const handleSubmit = () => {
     if (nickname && content && password) {
+      // 부모 컴포넌트로 댓글 데이터 전달
       onSubmit({ nickname, content, password });
+      // 필드 초기화
       setNickname("");
       setContent("");
       setPassword("");

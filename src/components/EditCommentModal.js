@@ -1,10 +1,11 @@
+// src/components/EditCommentModal.js
 import React, { useState } from "react";
 import {
   ModalContainer,
   ModalContent,
   CloseButton,
-  TextArea,
   InputField,
+  TextArea,
   SubmitButton,
 } from "../styles/CommentModalStyle";
 
@@ -14,10 +15,10 @@ const EditCommentModal = ({ onClose, onSubmit, currentComment }) => {
   const [password, setPassword] = useState("");
 
   const handleSubmit = () => {
-    if (password === currentComment.password) {
-      onSubmit({ nickname, content });
+    if (nickname && content && password) {
+      onSubmit({ nickname, content, password });
     } else {
-      alert("비밀번호가 일치하지 않습니다.");
+      alert("모든 필드를 채워주세요.");
     }
   };
 

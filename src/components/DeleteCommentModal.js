@@ -1,3 +1,4 @@
+// src/components/DeleteCommentModal.js
 import React, { useState } from "react";
 import {
   ModalContainer,
@@ -11,7 +12,11 @@ const DeleteCommentModal = ({ onClose, onDelete }) => {
   const [password, setPassword] = useState("");
 
   const handleDelete = () => {
-    onDelete(password);
+    if (password) {
+      onDelete(password);
+    } else {
+      alert("비밀번호를 입력해주세요.");
+    }
   };
 
   return (
@@ -21,7 +26,7 @@ const DeleteCommentModal = ({ onClose, onDelete }) => {
         <CloseButton onClick={onClose}>×</CloseButton>
         <InputField
           type="password"
-          placeholder="삭제 권한 비밀번호를 입력해 주세요"
+          placeholder="비밀번호를 입력해 주세요"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />

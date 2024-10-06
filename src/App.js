@@ -95,7 +95,7 @@ function App() {
         />
         <Route
           path="/private-group/:groupId/private-memory-access"
-          element={<PrivateMemoryAccessPage groups={groups} />}
+          element={<PrivateMemoryAccessPage />}
         />
         <Route
           path="/group/:groupId"
@@ -105,7 +105,7 @@ function App() {
               onGroupDelete={deleteGroup}
               onGroupUpdate={updateGroup}
               addMemoryToGroup={addMemoryToGroup}
-              updateMemoryInGroup={updateMemoryInGroup} // 추가된 부분
+              updateMemoryInGroup={updateMemoryInGroup}
             />
           }
         />
@@ -118,7 +118,6 @@ function App() {
             />
           }
         />
-        {/* 새로 추가된 추억 상세 페이지 라우트 */}
         <Route
           path="/memory/:memoryId"
           element={
