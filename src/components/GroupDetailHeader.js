@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { likeGroup } from "../api/groupApi"; // likeGroup 함수 추가
+import { likeGroup } from "../api/groupApi";
 import {
   GroupHeaderContainer,
   GroupImage,
@@ -8,12 +8,10 @@ import {
   GroupTitle,
   GroupDescription,
   GroupStatistics,
-  BadgeContainer,
-  Badge,
   GroupActionButtonSmall,
   GroupActionsContainer,
   GroupLinkButton,
-} from "../styles/GroupDetailHeaderStyle";
+} from "../styles/GroupDetailHeaderStyle"; // 'BadgeContainer'와 'Badge'는 제거했습니다.
 import GroupUpdateModal from "./GroupUpdateModal";
 import GroupDeleteModal from "./GroupDeleteModal";
 
@@ -34,9 +32,9 @@ const GroupDetailHeader = ({ group, onGroupUpdate, onGroupDelete }) => {
   const handleGroupUpdate = (updatedGroup) => {
     onGroupUpdate(updatedGroup);
     if (updatedGroup.isPublic) {
-      navigate("/"); // Navigate to public groups
+      navigate("/"); // 공개 그룹으로 이동
     } else {
-      navigate("/private-group"); // Navigate to private groups
+      navigate("/private-group"); // 비공개 그룹으로 이동
     }
   };
 
@@ -61,14 +59,8 @@ const GroupDetailHeader = ({ group, onGroupUpdate, onGroupDelete }) => {
         <GroupTitle>{group.name || group.title}</GroupTitle>
         <GroupDescription>{group.introduction}</GroupDescription>
         <GroupStatistics>
-          <span>추억 {group.memories?.length || 0}</span> |{" "}
           <span>그룹 공감 {likes}</span> {/* likes 상태를 사용 */}
         </GroupStatistics>
-        <BadgeContainer>
-          <Badge>🌟 7일 연속 추억 등록</Badge>
-          <Badge>🎉 그룹 공감 1만 개 이상 받기</Badge>
-          <Badge>💖 추억 공감 1만 개 이상 받기</Badge>
-        </BadgeContainer>
       </GroupInfo>
       <GroupActionsContainer>
         <GroupLinkButton onClick={handleUpdateClick}>
@@ -80,8 +72,7 @@ const GroupDetailHeader = ({ group, onGroupUpdate, onGroupDelete }) => {
       </GroupActionsContainer>
       <GroupActionButtonSmall onClick={handleLikeClick}>
         공감 보내기
-      </GroupActionButtonSmall>{" "}
-      {/* 공감 보내기 버튼에 클릭 이벤트 추가 */}
+      </GroupActionButtonSmall>
       {isUpdateModalOpen && (
         <GroupUpdateModal
           group={group}
