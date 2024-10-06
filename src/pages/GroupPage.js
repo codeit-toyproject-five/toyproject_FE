@@ -49,7 +49,6 @@ const GroupPage = () => {
               <GroupCardTitle>{group.name}</GroupCardTitle>
               <p>{group.introduction}</p>
               <GroupCardStats>
-                <span>좋아요: {group.likes || 0}</span> {/* 공감 수 필드 */}
                 <span>게시글 수: {group.postCount}</span>
               </GroupCardStats>
             </GroupCardContent>

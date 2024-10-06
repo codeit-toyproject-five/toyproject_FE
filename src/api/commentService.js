@@ -96,5 +96,3 @@ export const updateComment = async (commentId, nickname, content, password) => {
     }
   }
 };
-
-export default api;

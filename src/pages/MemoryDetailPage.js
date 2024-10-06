@@ -16,12 +16,10 @@ import {
   Tag,
   CommentsContainer,
   Comment,
-  EditIcon,
   DeleteIcon,
   Button,
 } from "../styles/MemoryDetailStyle";
 import CommentModal from "../components/CommentModal";
-import EditCommentModal from "../components/EditCommentModal";
 import DeleteCommentModal from "../components/DeleteCommentModal";
 import MemoryEditModal from "../components/MemoryEditModal";
 import MemoryDeleteModal from "../components/MemoryDeleteModal";
@@ -35,8 +33,7 @@ import {
   getComments,
   createComment,
   deleteComment,
-  updateComment,
-} from "../api/commentService";
+} from "../api/commentService"; // updateComment 임포트 제거
 
 const MemoryDetailPage = ({ updateMemoryInGroup }) => {
   const location = useLocation();
@@ -45,7 +42,6 @@ const MemoryDetailPage = ({ updateMemoryInGroup }) => {
   const [memory, setMemory] = useState(null);
   const [comments, setComments] = useState([]);
   const [isCommentModalOpen, setCommentModalOpen] = useState(false);
-  const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isMemoryEditModalOpen, setMemoryEditModalOpen] = useState(false);
   const [isMemoryDeleteModalOpen, setMemoryDeleteModalOpen] = useState(false);
@@ -66,7 +62,14 @@ const MemoryDetailPage = ({ updateMemoryInGroup }) => {
           });
           return;
         }
-        setMemory(data);
+
+        // likeCount가 존재하지 않거나 숫자가 아니면 0으로 설정
+        const sanitizedData = {
+          ...data,
+          likeCount: typeof data.likeCount === "number" ? data.likeCount : 0,
+        };
+
+        setMemory(sanitizedData);
         setLoading(false);
       } catch (err) {
         console.error("메모리 상세 조회 오류:", err);
@@ -92,24 +95,34 @@ const MemoryDetailPage = ({ updateMemoryInGroup }) => {
   const handleLike = async () => {
     if (!memory) return;
 
+    // 현재 likeCount가 숫자인지 확인하고, 아니면 0으로 설정
+    const currentLikeCount = Number(memory.likeCount) || 0;
+
     // Optimistic UI 업데이트: 공감 수를 즉시 증가
     setMemory((prevMemory) => ({
       ...prevMemory,
-      likeCount: prevMemory.likeCount + 1,
+      likeCount: currentLikeCount + 1,
     }));
 
     try {
       const updatedData = await likePost(memory.id);
       console.log("Updated like count:", updatedData.likeCount);
+
+      // updatedData.likeCount가 숫자인지 확인하고, 아니면 현재 값을 유지
+      const newLikeCount =
+        typeof updatedData.likeCount === "number"
+          ? updatedData.likeCount
+          : currentLikeCount + 1;
+
       setMemory((prevMemory) => ({
         ...prevMemory,
-        likeCount: updatedData.likeCount,
+        likeCount: newLikeCount,
       }));
     } catch (err) {
       // 오류 발생 시 Optimistic UI 업데이트 되돌림
       setMemory((prevMemory) => ({
         ...prevMemory,
-        likeCount: prevMemory.likeCount - 1,
+        likeCount: currentLikeCount,
       }));
       console.error("공감 추가 오류:", err);
       alert(err.message || "공감을 추가하는 데 실패했습니다.");
@@ -140,29 +153,6 @@ const MemoryDetailPage = ({ updateMemoryInGroup }) => {
       alert(error.message || "댓글 등록에 실패했습니다.");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleEditCommentSubmit = async (updatedComment) => {
-    try {
-      console.log("Submitting updated comment:", updatedComment);
-      const response = await updateComment(
-        currentComment.id, // commentId
-        updatedComment.nickname,
-        updatedComment.content,
-        updatedComment.password
-      );
-      console.log("Updated comment:", response);
-      setComments(
-        comments.map((comment) =>
-          comment.id === currentComment.id ? response : comment
-        )
-      );
-      setEditModalOpen(false);
-      setCurrentComment(null);
-    } catch (error) {
-      console.error("댓글 수정 오류:", error);
-      alert(error.message || "댓글을 수정하는 데 실패했습니다.");
     }
   };
 
@@ -278,12 +268,6 @@ const MemoryDetailPage = ({ updateMemoryInGroup }) => {
             </div>
             <p className="comment-content">{comment.content}</p>
             <div className="comment-actions">
-              <EditIcon
-                onClick={() => {
-                  setCurrentComment(comment);
-                  setEditModalOpen(true);
-                }}
-              />
               <DeleteIcon
                 onClick={() => {
                   setCurrentComment(comment);
@@ -303,13 +287,6 @@ const MemoryDetailPage = ({ updateMemoryInGroup }) => {
           postId={memoryId} // postId를 CommentModal에 전달
           onClose={() => setCommentModalOpen(false)}
           onSubmit={handleCommentSubmit}
-        />
-      )}
-      {isEditModalOpen && currentComment && (
-        <EditCommentModal
-          onClose={() => setEditModalOpen(false)}
-          onSubmit={handleEditCommentSubmit}
-          currentComment={currentComment}
         />
       )}
       {isDeleteModalOpen && currentComment && (

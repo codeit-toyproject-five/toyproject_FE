@@ -70,7 +70,7 @@ export const deleteGroup = async (groupId, password) => {
 export const likeGroup = async (groupId) => {
   try {
     const response = await api.post(`/groups/${groupId}/like`);
-    return response.data;
+    return response.data; // { message: "그룹 공감하기 성공", newLikeCount: 101 }
   } catch (error) {
     throw error.response ? error.response.data : new Error("Server error");
   }
