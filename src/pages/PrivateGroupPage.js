@@ -6,6 +6,7 @@ import {
   GroupCard,
   GroupCardTitle,
   GroupCardContent,
+  GroupCardStats,
 } from "../styles/PrivateGroupPageStyle";
 
 const PrivateGroupPage = () => {
@@ -33,13 +34,30 @@ const PrivateGroupPage = () => {
   return (
     <GroupListContainer>
       {groups.length > 0 ? (
-        groups.map((group) => (
-          <GroupCard key={group.id} onClick={() => handleGroupClick(group)}>
-            <GroupCardContent>
-              <GroupCardTitle>{group.name}</GroupCardTitle> {/* 그룹명 표시 */}
-            </GroupCardContent>
-          </GroupCard>
-        ))
+        groups.map((group) => {
+          // 로컬 저장소에서 좋아요 수 불러오기 (선택 사항)
+          const savedLikes = localStorage.getItem(`group_likes_${group.id}`);
+          const displayLikes = savedLikes
+            ? parseInt(savedLikes, 10)
+            : group.likes || 0;
+
+          return (
+            <GroupCard key={group.id} onClick={() => handleGroupClick(group)}>
+              {}
+              <GroupCardContent>
+                <GroupCardTitle>{group.name}</GroupCardTitle>
+                {/* 그룹명 표시 */}
+                <p>{group.introduction}</p>
+                <GroupCardStats>
+                  <span>게시글 수: {group.postCount}</span>
+                  <span style={{ marginLeft: "10px" }}>
+                    공감 수: {displayLikes}
+                  </span>
+                </GroupCardStats>
+              </GroupCardContent>
+            </GroupCard>
+          );
+        })
       ) : (
         <p>등록된 비공개 그룹이 없습니다.</p>
       )}

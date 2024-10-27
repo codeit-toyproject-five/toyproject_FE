@@ -1,6 +1,8 @@
+// GroupDetailHeader.js
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { likeGroup } from "../api/groupApi";
+import Badge from "./Badge.js";
 import {
   GroupHeaderContainer,
   GroupImage,
@@ -52,7 +54,7 @@ const GroupDetailHeader = ({ group, onGroupUpdate, onGroupDelete }) => {
       if (response.message === "그룹 공감하기 성공") {
         setLikes((prevLikes) => {
           const newLikes = prevLikes + 1;
-          localStorage.setItem(`group_likes_${group.id}`, newLikes); // 로컬 저장소에 저장
+          localStorage.setItem(`group_likes_${group.id}`, newLikes);
           return newLikes;
         });
       }
@@ -60,6 +62,19 @@ const GroupDetailHeader = ({ group, onGroupUpdate, onGroupDelete }) => {
       console.error("Error liking group:", error);
     }
   };
+
+  // Define badge conditions here
+  const badges = [];
+  if (group.memoryStreak >= 7) badges.push("🦋 7일 연속 추억 등록"); // 7일 연속 추억 등록
+  if (group.memoryCount >= 20) badges.push("📚 추억 20개 이상"); // 추억 20개 이상
+  if (
+    group.creationDate &&
+    new Date() - new Date(group.creationDate) >= 365 * 24 * 60 * 60 * 1000
+  ) {
+    badges.push("🎂 벌써 1년"); // 그룹 생성 후 1년 이상
+  }
+  if (group.likes >= 10) badges.push("🌼 그룹 좋아요 10개 이상"); // 그룹 좋아요 1만개 이상
+  if (group.postLikes >= 1) badges.push("💖 개시글 좋아요 1개 이상"); // 게시글 좋아요 1만개 이상
 
   return (
     <GroupHeaderContainer>
@@ -71,6 +86,10 @@ const GroupDetailHeader = ({ group, onGroupUpdate, onGroupDelete }) => {
         <GroupDescription>{group.introduction}</GroupDescription>
         <GroupStatistics>
           <span>그룹 공감 {likes}</span>
+          {/* 뱃지 표시 위치 */}
+          {badges.map((badge, index) => (
+            <Badge key={index} label={badge} />
+          ))}
         </GroupStatistics>
       </GroupInfo>
       <GroupActionsContainer>

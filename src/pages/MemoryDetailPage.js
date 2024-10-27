@@ -241,7 +241,6 @@ const MemoryDetailPage = ({ updateMemoryInGroup }) => {
       </div>
       <Info>
         <InteractionInfo>
-          <span>조회수: {memory.views}</span>
           <span>공감: {memory.likeCount}</span>
         </InteractionInfo>
         <Button onClick={handleLike}>공감 보내기</Button>
