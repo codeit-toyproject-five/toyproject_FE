@@ -14,6 +14,7 @@ const EditCommentModal = ({ onClose, onSubmit, currentComment }) => {
   const [nickname, setNickname] = useState(currentComment.nickname);
   const [content, setContent] = useState(currentComment.content);
   const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false); // 제출 상태 관리
 
   const handleSubmit = async () => {
     if (nickname.trim() && content.trim() && password.trim()) {
@@ -23,6 +24,7 @@ const EditCommentModal = ({ onClose, onSubmit, currentComment }) => {
           content: content.trim(),
           password: password.trim(),
         });
+        setIsSubmitting(true);
         // 부모 컴포넌트의 onSubmit은 업데이트된 댓글 데이터를 받도록 함
         await onSubmit({
           nickname: nickname.trim(),
@@ -32,6 +34,8 @@ const EditCommentModal = ({ onClose, onSubmit, currentComment }) => {
       } catch (error) {
         console.error("Failed to update comment:", error);
         alert("댓글 수정에 실패했습니다.");
+      } finally {
+        setIsSubmitting(false);
       }
     } else {
       alert("모든 필드를 채워주세요.");
@@ -60,7 +64,9 @@ const EditCommentModal = ({ onClose, onSubmit, currentComment }) => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <SubmitButton onClick={handleSubmit}>수정하기</SubmitButton>
+        <SubmitButton onClick={handleSubmit} disabled={isSubmitting}>
+          {isSubmitting ? "수정 중..." : "수정하기"}
+        </SubmitButton>
       </ModalContent>
     </ModalContainer>
   );

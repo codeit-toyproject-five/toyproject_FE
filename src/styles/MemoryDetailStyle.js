@@ -1,7 +1,7 @@
 // src/styles/MemoryDetailStyle.js
 
 import styled from "styled-components";
-import { FaTrashAlt } from "react-icons/fa"; // FaEdit 제거
+import { FaTrashAlt, FaEdit } from "react-icons/fa"; // FaEdit 다시 추가
 
 export const MemoryDetailContainer = styled.div`
   max-width: 800px;
@@ -168,6 +168,16 @@ export const Comment = styled.div`
 `;
 
 export const DeleteIcon = styled(FaTrashAlt)`
+  cursor: pointer;
+  font-size: 16px;
+  color: #888;
+
+  &:hover {
+    color: #333;
+  }
+`;
+
+export const EditIcon = styled(FaEdit)`
   cursor: pointer;
   font-size: 16px;
   color: #888;

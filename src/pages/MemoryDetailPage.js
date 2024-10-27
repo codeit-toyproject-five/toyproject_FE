@@ -17,10 +17,12 @@ import {
   CommentsContainer,
   Comment,
   DeleteIcon,
+  EditIcon, // EditIcon 추가
   Button,
 } from "../styles/MemoryDetailStyle";
 import CommentModal from "../components/CommentModal";
 import DeleteCommentModal from "../components/DeleteCommentModal";
+import EditCommentModal from "../components/EditCommentModal"; // EditCommentModal 추가
 import MemoryEditModal from "../components/MemoryEditModal";
 import MemoryDeleteModal from "../components/MemoryDeleteModal";
 import {
@@ -33,7 +35,8 @@ import {
   getComments,
   createComment,
   deleteComment,
-} from "../api/commentService"; // updateComment 임포트 제거
+  updateComment, // updateComment 임포트 추가
+} from "../api/commentService"; // updateComment 임포트 포함
 
 const MemoryDetailPage = ({ updateMemoryInGroup }) => {
   const location = useLocation();
@@ -43,9 +46,11 @@ const MemoryDetailPage = ({ updateMemoryInGroup }) => {
   const [comments, setComments] = useState([]);
   const [isCommentModalOpen, setCommentModalOpen] = useState(false);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [isEditModalOpen, setEditModalOpen] = useState(false); // 댓글 수정 모달 상태
   const [isMemoryEditModalOpen, setMemoryEditModalOpen] = useState(false);
   const [isMemoryDeleteModalOpen, setMemoryDeleteModalOpen] = useState(false);
   const [currentComment, setCurrentComment] = useState(null);
+  const [currentCommentToEdit, setCurrentCommentToEdit] = useState(null); // 수정할 댓글 상태
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -160,7 +165,7 @@ const MemoryDetailPage = ({ updateMemoryInGroup }) => {
     try {
       console.log(
         "Deleting comment ID:",
-        currentComment.id,
+        currentComment.id, // id 사용
         "with password:",
         password
       );
@@ -174,6 +179,32 @@ const MemoryDetailPage = ({ updateMemoryInGroup }) => {
     } catch (error) {
       console.error("댓글 삭제 오류:", error);
       alert(error.message || "댓글을 삭제하는 데 실패했습니다.");
+    }
+  };
+
+  const handleEditCommentSubmit = async (updatedCommentData) => {
+    try {
+      console.log("Editing comment with ID:", currentCommentToEdit.id); // id 사용
+      console.log("Updated data:", updatedCommentData);
+      const updatedComment = await updateComment(
+        currentCommentToEdit.id, // 올바른 id 사용
+        updatedCommentData.nickname,
+        updatedCommentData.content,
+        updatedCommentData.password
+      );
+
+      setComments((prevComments) =>
+        prevComments.map((comment) =>
+          comment.id === updatedComment.id ? updatedComment : comment
+        )
+      );
+
+      alert("댓글이 성공적으로 수정되었습니다.");
+      setEditModalOpen(false);
+      setCurrentCommentToEdit(null);
+    } catch (error) {
+      console.error("댓글 수정 오류:", error);
+      alert(error.message || "댓글을 수정하는 데 실패했습니다.");
     }
   };
 
@@ -200,6 +231,13 @@ const MemoryDetailPage = ({ updateMemoryInGroup }) => {
     } catch (err) {
       alert(err.message || "추억을 삭제하는 데 실패했습니다.");
     }
+  };
+
+  // 댓글 수정 모달 열기
+  const handleOpenEditModal = (comment) => {
+    console.log("Opening edit modal for comment:", comment);
+    setCurrentCommentToEdit(comment);
+    setEditModalOpen(true);
   };
 
   if (loading) {
@@ -273,6 +311,8 @@ const MemoryDetailPage = ({ updateMemoryInGroup }) => {
                   setDeleteModalOpen(true);
                 }}
               />
+              <EditIcon onClick={() => handleOpenEditModal(comment)} />{" "}
+              {/* EditIcon 추가 */}
             </div>
           </Comment>
         ))}
@@ -293,6 +333,16 @@ const MemoryDetailPage = ({ updateMemoryInGroup }) => {
           onClose={() => setDeleteModalOpen(false)}
           onDelete={handleDeleteComment}
           currentComment={currentComment}
+        />
+      )}
+      {isEditModalOpen && currentCommentToEdit && (
+        <EditCommentModal
+          onClose={() => {
+            setEditModalOpen(false);
+            setCurrentCommentToEdit(null);
+          }}
+          onSubmit={handleEditCommentSubmit}
+          currentComment={currentCommentToEdit}
         />
       )}
       {isMemoryEditModalOpen && (
