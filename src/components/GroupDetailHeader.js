@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { likeGroup } from "../api/groupApi";
 import {
@@ -11,15 +11,23 @@ import {
   GroupActionButtonSmall,
   GroupActionsContainer,
   GroupLinkButton,
-} from "../styles/GroupDetailHeaderStyle"; // 'BadgeContainer'와 'Badge'는 제거했습니다.
+} from "../styles/GroupDetailHeaderStyle";
 import GroupUpdateModal from "./GroupUpdateModal";
 import GroupDeleteModal from "./GroupDeleteModal";
 
 const GroupDetailHeader = ({ group, onGroupUpdate, onGroupDelete }) => {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [likes, setLikes] = useState(group.likes || 0); // 공감 수를 상태로 관리
+  const [likes, setLikes] = useState(group.likes || 0);
   const navigate = useNavigate();
+
+  // 로컬 저장소에서 좋아요 수 불러오기
+  useEffect(() => {
+    const savedLikes = localStorage.getItem(`group_likes_${group.id}`);
+    if (savedLikes) {
+      setLikes(parseInt(savedLikes, 10));
+    }
+  }, [group.id]);
 
   const handleUpdateClick = () => {
     setIsUpdateModalOpen(true);
@@ -40,13 +48,16 @@ const GroupDetailHeader = ({ group, onGroupUpdate, onGroupDelete }) => {
 
   const handleLikeClick = async () => {
     try {
-      const response = await likeGroup(group.id); // likeGroup API 호출
+      const response = await likeGroup(group.id);
       if (response.message === "그룹 공감하기 성공") {
-        setLikes((prevLikes) => prevLikes + 1); // 공감 수 증가
+        setLikes((prevLikes) => {
+          const newLikes = prevLikes + 1;
+          localStorage.setItem(`group_likes_${group.id}`, newLikes); // 로컬 저장소에 저장
+          return newLikes;
+        });
       }
     } catch (error) {
       console.error("Error liking group:", error);
-      // 오류 처리
     }
   };
 
@@ -59,7 +70,7 @@ const GroupDetailHeader = ({ group, onGroupUpdate, onGroupDelete }) => {
         <GroupTitle>{group.name || group.title}</GroupTitle>
         <GroupDescription>{group.introduction}</GroupDescription>
         <GroupStatistics>
-          <span>그룹 공감 {likes}</span> {/* likes 상태를 사용 */}
+          <span>그룹 공감 {likes}</span>
         </GroupStatistics>
       </GroupInfo>
       <GroupActionsContainer>

@@ -78,3 +78,19 @@ export const EmptyMessage = styled.div`
   font-size: 16px;
   color: #666;
 `;
+
+// LikeButton 스타일 정의
+export const LikeButton = styled.button`
+  margin-top: 10px;
+  padding: 8px 12px;
+  background-color: ${(props) => (props.disabled ? "#ccc" : "#007BFF")};
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: ${(props) => (props.disabled ? "default" : "pointer")};
+  font-size: 14px;
+
+  &:hover {
+    background-color: ${(props) => (props.disabled ? "#ccc" : "#0056b3")};
+  }
+`;
