@@ -37,7 +37,7 @@ const Header = ({ isPublic, setIsPublic }) => {
         <SearchInput placeholder="그룹명을 검색해 주세요" />
         <SortDropdown>
           <option value="recent">공감순</option>
-          <option value="popular">인기순</option>
+          <option value="popular">게시글순</option>
         </SortDropdown>
       </div>
       <Link to="/create-group">
